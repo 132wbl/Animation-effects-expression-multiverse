@@ -1,0 +1,38 @@
+name: 画廊自动更新
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "库-作者王伯伦制/**"
+      - "画廊文案.json"
+      - "tools/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: 扫描动效并重写 index.html
+        run: python tools/生成画廊.py
+
+      - name: 有变化就提交（画廊首页跟着库走）
+        run: |
+          git config user.name "gallery-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -n "$(git status --porcelain index.html)" ]; then
+            git add index.html
+            git commit -m "自动更新画廊首页"
+            git push
+          else
+            echo "index.html 没有变化"
+          fi
