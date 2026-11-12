@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>色彩循环 Color Cycle — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .color-cycle{animation:colorCycle var(--duration,4s) linear infinite;color:#fff;padding:20px 44px;border-radius:12px;font-weight:900;font-size:28px}@keyframes colorCycle{0%{background:hsl(0,90%,60%)}50%{background:hsl(180,90%,60%)}100%{background:hsl(360,90%,60%)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:4s" -->
+  <div class="color-cycle">Neon</div>
+</body>
+</html>

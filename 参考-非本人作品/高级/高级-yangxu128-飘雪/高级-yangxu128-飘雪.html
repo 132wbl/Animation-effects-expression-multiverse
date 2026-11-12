@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飘雪 Canvas Snow — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.snow{width:100%;height:100%}
+</style>
+</head>
+<body>
+  <canvas class="snow"></canvas>
+<script>const c=document.querySelector('.snow');const ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const flakes=[];for(let i=0;i<180;i++)flakes.push({x:Math.random()*c.width,y:Math.random()*c.height,r:1+Math.random()*3,s:0.5+Math.random()*1.5,d:Math.random()*6.28,w:0.4+Math.random()*0.6});(function tick(){ctx.fillStyle='rgba(15,16,35,0.15)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';flakes.forEach(f=>{f.d+=0.01;f.y+=f.s;f.x+=Math.sin(f.d)*f.w;if(f.y>c.height){f.y=-5;f.x=Math.random()*c.width;}ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,7);ctx.fill();});requestAnimationFrame(tick);})();</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>烟花 Canvas Fireworks — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.fw{width:100%;height:100%}
+</style>
+</head>
+<body>
+  <canvas class="fw"></canvas>
+<script>const c=document.querySelector('.fw');const ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;let ps=[];function launch(){const x=c.width/2+(Math.random()-0.5)*c.width*0.8;const y=c.height*0.25+Math.random()*c.height*0.2;const hue=Math.random()*360;for(let i=0;i<80;i++){const a=(i/80)*6.28;ps.push({x,y,vx:Math.cos(a)*3,vy:Math.sin(a)*3,c:`hsl(${hue} 90% 60%)`,life:1});}}setInterval(launch,1100);(function tick(){ctx.fillStyle='rgba(5,6,15,0.25)';ctx.fillRect(0,0,c.width,c.height);ps=ps.filter(p=>p.life>0);ps.forEach(p=>{p.vy+=0.05;p.x+=p.vx;p.y+=p.vy;p.life-=0.015;ctx.globalAlpha=p.life;ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,3,3);});ctx.globalAlpha=1;requestAnimationFrame(tick);})();</script>
+</body>
+</html>

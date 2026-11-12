@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆UI ⑪ — 故障数据流全屏 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #03070a; overflow: hidden; font-family: "Consolas", monospace; color: #22d3ee;
+  }
+  canvas { display: block; }
+
+  /* 浮在数据流上的关键信息 */
+  .core {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 460px; padding: 26px 30px; z-index: 5;
+    background: rgba(3,8,12,0.85); border: 1px solid rgba(34,211,238,0.35);
+    border-radius: 16px; box-shadow: 0 0 40px rgba(34,211,238,0.15), inset 0 0 20px rgba(34,211,238,0.06);
+    text-align: center; animation: coreGlitch 6s ease-in-out infinite;
+  }
+  @keyframes coreGlitch { 0%,100%{ transform: translate(-50%,-50%); } 92%{ transform: translate(-50%,-50%) translateX(0); }
+    93%{ transform: translate(-50%,-50%) translateX(-3px); } 95%{ transform: translate(-50%,-50%) translateX(3px); }
+    97%{ transform: translate(-50%,-50%) translateX(-2px); } 99%{ transform: translate(-50%,-50%); } }
+  .core .tag { font-size: 12px; letter-spacing: 4px; color: rgba(34,211,238,0.6); }
+  .core .msg { font-size: 22px; letter-spacing: 3px; color: #7df3ff; margin: 14px 0 6px; text-shadow: 0 0 14px rgba(34,211,238,0.6); }
+  .core .sub { font-size: 13px; color: rgba(34,211,238,0.5); letter-spacing: 2px; }
+  .core .bar { width: 70%; height: 3px; margin: 16px auto 0; border-radius: 2px; background: rgba(34,211,238,0.2); overflow: hidden; }
+  .core .bar i { display: block; height: 100%; width: 30%; background: #22d3ee; animation: scanbar 2s ease-in-out infinite; }
+  @keyframes scanbar { 0%{ margin-left: -30%; } 100%{ margin-left: 100%; } }
+
+  .meta { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(34,211,238,0.5); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; z-index: 6; }
+</style>
+</head>
+<body>
+
+  <canvas id="cv"></canvas>
+
+  <div class="core">
+    <div class="tag">◆ CORE MESSAGE</div>
+    <div class="msg">系统正在被数据淹没</div>
+    <div class="sub">DATA FLUX: 42,817 帧/秒</div>
+    <div class="bar"><i></i></div>
+  </div>
+
+  <div class="meta">颠覆UI ⑪ · 故障数据流全屏</div>
+
+<script>
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+
+  const FONT = 14;
+  const COLS = Math.floor(W / FONT);
+  // 每列的 Y 进度
+  const drops = [];
+  for (let i=0;i<COLS;i++) drops[i] = Math.random() * H;
+  const CHARS = '01アイウエオカキクケコサシスセソタチツテト01010ABCDEF';
+
+  function draw(){
+    ctx.fillStyle = 'rgba(3,7,10,0.08)';
+    ctx.fillRect(0,0,W,H);
+    ctx.font = FONT + 'px Consolas, monospace';
+    for (let i=0;i<COLS;i++){
+      const ch = CHARS[Math.floor(Math.random()*CHARS.length)];
+      // 故障色偏：偶尔红/青错位
+      const x = i*FONT, y = drops[i]*FONT;
+      if (Math.random() < 0.05){
+        ctx.fillStyle = '#ff2d55'; ctx.fillText(ch, x-2, y);
+        ctx.fillStyle = '#00c8ff'; ctx.fillText(ch, x+2, y);
+      } else {
+        ctx.fillStyle = Math.random()<0.2 ? '#7df3ff' : '#1a9e7a';
+        ctx.fillText(ch, x, y);
+      }
+      if (y > H && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>

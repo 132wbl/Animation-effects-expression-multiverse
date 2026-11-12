@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>水平翻转 Flip X — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .flip-x{animation:flipX var(--duration,0.8s) ease-out both;transform-origin:center}@keyframes flipX{from{transform:perspective(600px) rotateX(-90deg);opacity:0}to{transform:perspective(600px) rotateX(0);opacity:1}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:0.8s" -->
+  <div class="flip-x">&#8635;</div>
+</body>
+</html>

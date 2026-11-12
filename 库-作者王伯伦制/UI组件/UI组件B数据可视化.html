@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI组件 B — 数据可视化 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0e14;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+  }
+  .stage { max-width: 940px; text-align: center; }
+  .title { font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .card {
+    width: 280px; min-height: 190px; border-radius: 14px;
+    background: #141a22; border: 1px solid #222b36;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: 18px;
+  }
+  .card .label { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+
+  /* 1 环形仪表盘 */
+  .gauge { position: relative; width: 130px; height: 130px; }
+  .gauge svg { transform: rotate(-90deg); }
+  .gauge .track { fill:none; stroke:#222b36; stroke-width:10; }
+  .gauge .fill { fill:none; stroke:url(#ggrad); stroke-width:10; stroke-linecap:round;
+    stroke-dasharray: 314; stroke-dashoffset: 314; animation: gauge 2.2s cubic-bezier(0.5,0,0.2,1) infinite; }
+  @keyframes gauge { 0%{stroke-dashoffset:314} 55%{stroke-dashoffset:70} 100%{stroke-dashoffset:314} }
+  .gauge b { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700; color:#22d3ee; }
+
+  /* 2 条形图生长 */
+  .bars { display:flex; align-items:flex-end; gap:10px; height:120px; }
+  .bars span { width:26px; border-radius:6px 6px 2px 2px;
+    background: linear-gradient(180deg,#22d3ee,#0891b2); animation: barGrow 1.6s ease-out infinite; }
+  .bars span:nth-child(1){ height:40%; animation-delay:0s; }
+  .bars span:nth-child(2){ height:70%; animation-delay:0.25s; }
+  .bars span:nth-child(3){ height:55%; animation-delay:0.5s; }
+  .bars span:nth-child(4){ height:90%; animation-delay:0.75s; }
+  .bars span:nth-child(5){ height:65%; animation-delay:1s; }
+  @keyframes barGrow { 0%{height:6%} 60%{height:100%} 100%{height:6%} }
+
+  /* 3 折线流动 */
+  .linechart { width: 210px; height: 120px; overflow: hidden; }
+  .linechart svg { width:210px; height:120px; }
+  .linechart path { fill:none; stroke:#a78bfa; stroke-width:2.5; stroke-linecap:round;
+    stroke-dasharray: 240; stroke-dashoffset: 240; animation: lineflow 2.4s linear infinite; filter: drop-shadow(0 0 4px rgba(167,139,250,0.6)); }
+  .linechart .dot { fill:#f0abfc; animation: dotpulse 2.4s linear infinite; }
+  @keyframes lineflow { to { stroke-dashoffset: -240; } }
+  @keyframes dotpulse { 0%,100%{opacity:0.3} 30%{opacity:1} }
+
+  /* 4 饼图展开 */
+  .donut { position: relative; width: 130px; height: 130px; }
+  .donut svg { transform: rotate(-90deg); }
+  .donut circle { fill:none; stroke-width:13; stroke-linecap:round;
+    stroke-dasharray: 314; stroke-dashoffset: 314; animation: donut 2s cubic-bezier(0.5,0,0.2,1) infinite; }
+  .donut circle:nth-child(1){ stroke:#22d3ee; }
+  .donut circle:nth-child(2){ stroke:#a78bfa; animation-delay:0.6s; }
+  .donut circle:nth-child(3){ stroke:#f43f5e; animation-delay:1.2s; }
+  @keyframes donut { 0%{stroke-dashoffset:314} 100%{stroke-dashoffset:0} }
+
+  /* 5 实时数字跳动 */
+  .counter { font-size: 44px; font-weight: 800; color: #f0abfc; text-shadow: 0 0 20px rgba(240,171,252,0.5); font-variant-numeric: tabular-nums; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="title">UI组件 B · 数据可视化</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="gauge">
+          <svg width="130" height="130"><defs><linearGradient id="ggrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient></defs>
+          <circle class="track" cx="65" cy="65" r="50"/><circle class="fill" cx="65" cy="65" r="50"/></svg>
+          <b>78%</b>
+        </div>
+        <div class="label">仪表盘</div>
+      </div>
+
+      <div class="card">
+        <div class="bars"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="label">条形生长</div>
+      </div>
+
+      <div class="card">
+        <div class="linechart"><svg viewBox="0 0 210 120"><path d="M0 90 L30 70 L60 82 L90 40 L120 60 L150 25 L180 45 L210 20"/><circle class="dot" cx="210" cy="20" r="4"/></svg></div>
+        <div class="label">折线流动</div>
+      </div>
+
+      <div class="card">
+        <div class="donut"><svg width="130" height="130"><circle cx="65" cy="65" r="50"/><circle cx="65" cy="65" r="50"/><circle cx="65" cy="65" r="50"/></svg></div>
+        <div class="label">饼图展开</div>
+      </div>
+
+      <div class="card">
+        <div class="counter" id="counter">0</div>
+        <div class="label">实时数字</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta">UI组件 B · 数据可视化</div>
+
+<script>
+  // 实时数字跳动
+  const counter = document.getElementById('counter');
+  let val = 0, up = true;
+  setInterval(() => {
+    up ? (val += 137) : (val -= 137);
+    if (val > 9860) up = false;
+    if (val <= 0) up = true;
+    counter.textContent = val.toLocaleString();
+  }, 120);
+</script>
+</body>
+</html>

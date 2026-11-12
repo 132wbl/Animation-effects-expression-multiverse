@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>摇晃 Shake — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .shake{animation:shake var(--duration,0.5s)}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:0.5s" -->
+  <div class="shake">!</div>
+</body>
+</html>

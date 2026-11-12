@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>故障文字 Glitch Text — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.glitch{font-size:52px;font-weight:900;letter-spacing:2px;transition:transform .12s}
+</style>
+</head>
+<body>
+  <div class="glitch">GLITCH</div>
+<script>const el=document.querySelector('.glitch');setInterval(()=>{el.style.transform=`translate(${(Math.random()-0.5)*4}px,${(Math.random()-0.5)*4}px)`;el.style.textShadow=`${(Math.random()-0.5)*6}px 0 #22d3ee, ${(Math.random()-0.5)*6}px 0 #f43f5e`;},120);</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>庆祝抖动 Tada — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .tada{animation:tada var(--duration,1s) ease-in-out infinite}@keyframes tada{0%{transform:scale(1) rotate(0)}10%{transform:scale(1.08) rotate(-3deg)}20%{transform:scale(1.08) rotate(-3deg)}30%{transform:scale(1.08) rotate(3deg)}40%{transform:scale(1.08) rotate(-3deg)}50%{transform:scale(1.08) rotate(3deg)}60%{transform:scale(1.08) rotate(-3deg)}70%{transform:scale(1.08) rotate(3deg)}80%{transform:scale(1.08) rotate(-3deg)}90%{transform:scale(1.08) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:1s" -->
+  <div class="tada">&#127881;</div>
+</body>
+</html>

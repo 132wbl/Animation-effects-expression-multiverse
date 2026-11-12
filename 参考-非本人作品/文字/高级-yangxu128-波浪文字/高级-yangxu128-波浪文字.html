@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>波浪文字 Wave Text — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.wavet{font-size:44px;font-weight:900}@keyframes wavec{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+</style>
+</head>
+<body>
+  <div class="wavet">WAVE</div>
+<script>const el=document.querySelector('.wavet');const txt=el.textContent;el.textContent='';[...txt].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c;s.style.display='inline-block';s.style.animation='wavec 1.2s ease-in-out infinite';s.style.animationDelay=(i*0.08)+'s';el.appendChild(s);});</script>
+</body>
+</html>

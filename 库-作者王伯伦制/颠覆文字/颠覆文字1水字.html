@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ① — 水字 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #0b1a24, #04080c 80%);
+    font-family: system-ui, sans-serif; overflow: hidden;
+  }
+  canvas { display: block; }
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(150,210,235,0.5); z-index: 5;
+    background: rgba(0,0,0,0.35); padding: 6px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+  <canvas id="cv"></canvas>
+  <div class="meta">颠覆文字 ① · 水字</div>
+
+<script>
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+
+  // 用粒子模拟"水"，聚合成"水"字
+  const TEXT = '水';
+  const STEP = 5;
+  let parts = [];
+  // 状态机
+  let state = 'drop';     // drop(下落汇聚) -> hold(停留) -> break(散开滴落)
+  let t = 0, holdT = 0;
+
+  // 采样文字像素 -> 目标位置
+  function sampleTarget(){
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const octx = off.getContext('2d');
+    octx.fillStyle = '#fff';
+    octx.font = `900 ${Math.min(W,H)*0.42}px "Microsoft YaHei", "SimHei", sans-serif`;
+    octx.textAlign = 'center'; octx.textBaseline = 'middle';
+    octx.fillText(TEXT, W/2, H/2 + 10);
+    const img = octx.getImageData(0,0,W,H).data;
+    const pts = [];
+    for (let y=0; y<H; y+=STEP) for (let x=0; x<W; x+=STEP){
+      if (img[(y*W+x)*4+3] > 100) pts.push([x+STEP/2, y+STEP/2]);
+    }
+    return pts;
+  }
+
+  // 生成水滴：从上方随机位置滴下，目标 = 文字上的某个点
+  function spawn(targets){
+    parts = targets.map(tp => {
+      const tx = tp[0], ty = tp[1];
+      return {
+        x: W*0.5 + (Math.random()-0.5)*W*0.6,
+        y: -Math.random()*H*0.3 - 20,     // 从上方
+        tx, ty,
+        vx: 0, vy: 0,
+        r: 1.2 + Math.random()*2.2
+      };
+    });
+  }
+
+  let targets = [];
+  function reset(){
+    targets = sampleTarget();
+    state = 'drop'; t = 0; holdT = 0;
+    spawn(targets);
+  }
+  reset();
+
+  function frame(){
+    t++;
+    // 背景留痕（水的轨迹感，很淡）
+    ctx.fillStyle = 'rgba(4,8,12,0.28)';
+    ctx.fillRect(0,0,W,H);
+
+    const alpha = Math.min(1, t/30);
+
+    if (state === 'drop') {
+      // 水滴向目标汇聚
+      for (const p of parts){
+        p.vx += (p.tx - p.x) * 0.02;
+        p.vy += (p.ty - p.y) * 0.02 + 0.06;   // 重力
+        p.vx *= 0.88; p.vy *= 0.88;
+        p.x += p.vx; p.y += p.vy;
+      }
+      if (t > 260) { state = 'hold'; holdT = 0; }
+    } else if (state === 'hold') {
+      // 轻微水的呼吸抖动
+      for (const p of parts){
+        p.x += Math.sin(t*0.05 + p.tx*0.02) * 0.25;
+        p.y += Math.cos(t*0.04 + p.ty*0.02) * 0.25;
+      }
+      holdT++;
+      if (holdT > 130) { state = 'break'; }
+    } else { // break：水化开滴落
+      for (const p of parts){
+        p.vy += 0.14;                  // 重力下落
+        p.vx *= 0.98;
+        p.x += p.vx; p.y += p.vy;
+      }
+      if (t > 700) reset();
+    }
+
+    // 画水滴
+    for (const p of parts){
+      if (p.y < -10) continue;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, 6.28);
+      const g = ctx.createRadialGradient(p.x-p.r*0.3, p.y-p.r*0.3, p.r*0.1, p.x, p.y, p.r);
+      g.addColorStop(0, 'rgba(190,240,255,0.95)');
+      g.addColorStop(1, 'rgba(60,170,220,0.4)');
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+</script>
+</body>
+</html>

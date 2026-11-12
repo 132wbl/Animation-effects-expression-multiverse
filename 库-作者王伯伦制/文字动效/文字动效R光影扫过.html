@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 R — 光影扫过 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0e1220;   /* 深底，突出光影 */
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 光影扫过文字 */
+  .shine {
+    position: relative; display: inline-block;
+    font-size: 84px; font-weight: 400; letter-spacing: 10px;
+    color: #4a4f63;                 /* 未照到：暗色 */
+    padding: 10px 8px;
+  }
+  /* 光照层：一束斜光扫过，把字照亮 */
+  .shine::before {
+    content: attr(data-text);
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    color: #f2ead8;
+    text-shadow: 0 0 28px rgba(255,240,210,0.6);
+    -webkit-text-stroke: 0;
+    background: linear-gradient(110deg, transparent 0%, transparent 30%, rgba(255,250,235,0.5) 50%, transparent 68%, transparent 100%);
+    -webkit-background-clip: text; background-clip: text;
+    background-size: 300% 100%;
+    animation: shineSweep 4.2s cubic-bezier(0.45,0,0.25,1) infinite;
+  }
+  @keyframes shineSweep {
+    0%   { background-position: -150% 0; opacity: 0.2; }
+    18%  { opacity: 1; }
+    60%  { background-position: 150% 0; opacity: 1; }
+    85%  { opacity: 0.25; }
+    100% { background-position: 150% 0; opacity: 0.1; }
+  }
+
+  .sub { margin-top: 30px; font-size: 14px; letter-spacing: 6px; color: rgba(200,210,235,0.45); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.35);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <span class="shine" data-text="光影之间" id="shine">光影之间</span>
+    <div class="sub">一束光 · 扫过文字</div>
+  </div>
+
+  <div class="meta">文字动效 R · 光影扫过</div>
+
+<script>
+  // 预留：可改文字（需同步改 .shine 的 data-text 和文字内容）
+  const shineEl = document.getElementById('shine');
+</script>
+</body>
+</html>

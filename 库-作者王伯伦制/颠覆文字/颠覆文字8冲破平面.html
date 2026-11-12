@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑧ — 冲破平面 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 45%, #10141f, #06080d 82%);
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+    perspective: 700px;
+  }
+  .stage { text-align: center; }
+
+  /* 3D 立体字：有景深，字冲出平面 */
+  .depth { position: relative; display: inline-block; font-size: 0; line-height: 1; }
+  .depth span {
+    display: inline-block; font-size: 90px; font-weight: 400; letter-spacing: 6px;
+    transform-style: preserve-3d;
+    color: #d8e6ff;
+    text-shadow: 0 0 22px rgba(120,190,255,0.35);
+    transition: transform 0.4s;
+  }
+  /* 每个字不同的深度（景深）+ 缓慢呼吸 */
+  .depth span:nth-child(1){ transform: translateZ(120px); animation: breathe 3s ease-in-out infinite; }
+  .depth span:nth-child(2){ transform: translateZ(40px);  animation: breathe 3.2s ease-in-out infinite; }
+  .depth span:nth-child(3){ transform: translateZ(-40px); animation: breathe 2.8s ease-in-out infinite; }
+  .depth span:nth-child(4){ transform: translateZ(110px); animation: breathe 3.4s ease-in-out infinite; }
+  .depth span:nth-child(5){ transform: translateZ(0px);   animation: breathe 3s ease-in-out infinite; }
+  @keyframes breathe {
+    0%,100% { opacity: 0.55; filter: blur(1px); }
+    50% { opacity: 1; filter: blur(0); }
+  }
+
+  .sub { margin-top: 34px; font-size: 14px; letter-spacing: 5px; color: rgba(170,195,235,0.5); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(180,205,240,0.4); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="depth" id="depth">探出</div>
+    <div class="sub">冲破平面 · 有景深</div>
+  </div>
+
+  <div class="meta">颠覆文字 ⑧ · 冲破平面</div>
+
+<script>
+  // 预留：可改字（每个字一个 span，改字后需同步各 span 的 translateZ 深度）
+</script>
+</body>
+</html>

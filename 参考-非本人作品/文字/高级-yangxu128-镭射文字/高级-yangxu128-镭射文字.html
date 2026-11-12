@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>镭射文字 Chrome Text — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.chrome{font-size:60px;font-weight:900;background:linear-gradient(180deg,#f8fafc,#94a3b8 40%,#475569 60%,#cbd5e1);-webkit-background-clip:text;background-clip:text;color:transparent;animation:chromeShift var(--duration,6s) linear infinite}@keyframes chromeShift{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+</style>
+</head>
+<body>
+  <div class="chrome">Chrome</div>
+
+</body>
+</html>

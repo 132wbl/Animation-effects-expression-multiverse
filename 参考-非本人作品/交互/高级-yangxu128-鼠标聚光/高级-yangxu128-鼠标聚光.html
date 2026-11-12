@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鼠标聚光 Mouse Spotlight — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.spot{position:relative;width:340px;height:160px;background:#1e293b;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;color:#94a3b8}.spot::after{content:'';position:absolute;inset:0;background:radial-gradient(200px circle at var(--mx,50%) var(--my,50%),rgba(34,211,238,0.4),transparent 70%);opacity:0;transition:opacity .3s}.spot:hover::after{opacity:1}
+</style>
+</head>
+<body>
+  <div class="spot" id="spot">鼠标滑过我</div>
+<script>const s=document.getElementById('spot');s.addEventListener('mousemove',e=>{const r=s.getBoundingClientRect();s.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');s.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');});</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五彩纸屑 Canvas Confetti — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+</style>
+</head>
+<body>
+  <canvas class="cv"></canvas>
+<script>const cv=document.querySelector('.cv');const ctx=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;const ps=[];function burst(x,y){for(let i=0;i<120;i++)ps.push({x,y,vx:(Math.random()-0.5)*10,vy:Math.random()*-14,g:0.35,c:`hsl(${Math.random()*360} 90% 60%)`,s:5+Math.random()*4,life:1});}setInterval(()=>burst(cv.width/2+Math.random()*200-100,100),600);(function tick(){ctx.fillStyle='rgba(15,16,35,0.15)';ctx.fillRect(0,0,cv.width,cv.height);for(let i=ps.length-1;i>=0;i--){const p=ps[i];p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.life-=0.008;if(p.life<=0){ps.splice(i,1);continue;}ctx.globalAlpha=p.life;ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,p.s,p.s);}ctx.globalAlpha=1;requestAnimationFrame(tick);})();</script>
+</body>
+</html>

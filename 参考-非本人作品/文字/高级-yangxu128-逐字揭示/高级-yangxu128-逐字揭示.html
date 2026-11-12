@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>逐字揭示 Split Char Reveal — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.split{font-size:40px;font-weight:900}@keyframes pop{from{opacity:0;transform:translateY(20px) scale(.6)}to{opacity:1;transform:translateY(0) scale(1)}}
+</style>
+</head>
+<body>
+  <div class="split">逐字揭示</div>
+<script>const el=document.querySelector('.split');const txt=el.textContent;el.textContent='';[...txt].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c;s.style.display='inline-block';s.style.animation='pop .5s cubic-bezier(0.34,1.56,0.64,1) both';s.style.animationDelay=(i*0.06)+'s';el.appendChild(s);});</script>
+</body>
+</html>

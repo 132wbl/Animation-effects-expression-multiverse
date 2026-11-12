@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆UI ⑤ — 数据大屏指挥中心 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Consolas", "Courier New", monospace;
+    color: #22d3ee; background: #04080f; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  /* 网格底 */
+  .bg-grid { position: fixed; inset: 0; opacity: 0.12; pointer-events: none;
+    background-image: linear-gradient(rgba(34,211,238,0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,0.5) 1px, transparent 1px);
+    background-size: 40px 40px; }
+
+  /* 顶栏 */
+  .topbar { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px; border-bottom: 1px solid rgba(34,211,238,0.25);
+    background: rgba(4,8,15,0.8); }
+  .topbar .t { font-size: 20px; letter-spacing: 6px; color: #7df3ff; text-shadow: 0 0 14px rgba(34,211,238,0.6); }
+  .topbar .t::before { content:'◈ '; }
+  .topbar .status { font-size: 12px; color: rgba(34,211,238,0.7); letter-spacing: 2px; }
+  .topbar .status em { font-style: normal; color: #34d399; }
+
+  /* 主体 */
+  .main { flex: 1; display: flex; gap: 18px; padding: 18px; z-index: 2; }
+  .panel { border: 1px solid rgba(34,211,238,0.22); border-radius: 12px;
+    background: rgba(10,20,34,0.6); position: relative; overflow: hidden; }
+  .panel .p-title { font-size: 12px; letter-spacing: 3px; color: rgba(34,211,238,0.8);
+    padding: 12px 16px; border-bottom: 1px solid rgba(34,211,238,0.15); }
+  .panel .p-title::before { content:'▍'; }
+
+  .col-left { width: 30%; display: flex; flex-direction: column; gap: 18px; }
+  .col-mid { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+  .col-right { width: 30%; display: flex; flex-direction: column; gap: 18px; }
+
+  /* 雷达 */
+  .radar { position: relative; flex: 1; min-height: 200px; display:flex; align-items:center; justify-content:center; }
+  .radar .rings { position: relative; width: 190px; height: 190px; }
+  .radar .rings i { position: absolute; border-radius: 50%; border: 1px solid rgba(34,211,238,0.3); }
+  .radar .rings i:nth-child(1){ inset:0; } .radar .rings i:nth-child(2){ inset:24px; }
+  .radar .rings i:nth-child(3){ inset:48px; } .radar .rings i:nth-child(4){ inset:72px; }
+  .radar .sweep { position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(34,211,238,0.5), transparent 90deg);
+    animation: sweep 3s linear infinite; }
+  @keyframes sweep { to { transform: rotate(360deg); } }
+  .radar .blip { position:absolute; width:6px; height:6px; border-radius:50%; background:#7df3ff;
+    box-shadow: 0 0 8px #22d3ee; animation: blip 3s ease-out infinite; }
+  .radar .blip.b1{ left:34%; top:40%; animation-delay:0.6s; }
+  .radar .blip.b2{ left:60%; top:55%; animation-delay:1.7s; }
+  .radar .blip.b3{ left:45%; top:30%; animation-delay:2.4s; }
+  @keyframes blip { 0%{opacity:1; transform:scale(1)} 100%{opacity:0; transform:scale(0)} }
+
+  /* KPI 数字 */
+  .kpis { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 8px 16px 16px; }
+  .kpi { display: flex; align-items: baseline; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px dashed rgba(34,211,238,0.15); }
+  .kpi .k { font-size: 12px; color: rgba(34,211,238,0.6); letter-spacing: 1px; }
+  .kpi .v { font-size: 26px; color: #7df3ff; text-shadow: 0 0 12px rgba(34,211,238,0.5); font-variant-numeric: tabular-nums; }
+  .kpi .v small { font-size: 12px; color: rgba(34,211,238,0.5); }
+
+  /* 折线图 */
+  .chart { position: relative; flex: 1; min-height: 150px; }
+  .chart canvas { width: 100%; height: 100%; }
+
+  /* 底部数据条 */
+  .barline { display: flex; gap: 10px; padding: 12px 16px; flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 90px; text-align: center; }
+  .stat .n { font-size: 18px; color: #7df3ff; text-shadow: 0 0 8px rgba(34,211,238,0.4); }
+  .stat .t { font-size: 11px; color: rgba(34,211,238,0.5); letter-spacing: 1px; margin-top: 3px; }
+
+  .meta { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(34,211,238,0.5); background: rgba(0,0,0,0.5);
+    padding: 4px 16px; border-radius: 20px; z-index: 3; }
+</style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <div class="topbar">
+    <div class="t">指挥中心 CONTROL CENTER</div>
+    <div class="status">SYS <em>●</em> ONLINE · 24:00:00</div>
+  </div>
+
+  <div class="main">
+    <div class="col-left">
+      <div class="panel">
+        <div class="p-title">扫描雷达</div>
+        <div class="radar">
+          <div class="rings"><i></i><i></i><i></i><i></i><div class="sweep"></div></div>
+          <span class="blip b1"></span><span class="blip b2"></span><span class="blip b3"></span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="p-title">关键指标</div>
+        <div class="kpis">
+          <div class="kpi"><span class="k">在线用户</span><span class="v" data-t="12847">0</span></div>
+          <div class="kpi"><span class="k">请求率</span><span class="v" data-t="9842">0<small>/s</small></span></div>
+          <div class="kpi"><span class="k">可用性</span><span class="v" data-t="99.9" data-d="1">0<small>%</small></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-mid">
+      <div class="panel">
+        <div class="p-title">实时流量曲线</div>
+        <div class="chart"><canvas id="chart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="p-title">运行状态</div>
+        <div class="barline">
+          <div class="stat"><div class="n">2,300</div><div class="t">节点</div></div>
+          <div class="stat"><div class="n">1.2k</div><div class="t">带宽</div></div>
+          <div class="stat"><div class="n">38</div><div class="t">告警</div></div>
+          <div class="stat"><div class="n">99.9%</div><div class="t">可用</div></div>
+          <div class="stat"><div class="n">14</div><div class="t">延迟</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="panel">
+        <div class="p-title">数据流</div>
+        <div class="kpis">
+          <div class="kpi"><span class="k">上行</span><span class="v" data-t="5820">0<small>MB</small></span></div>
+          <div class="kpi"><span class="k">下行</span><span class="v" data-t="12004">0<small>MB</small></span></div>
+          <div class="kpi"><span class="k">任务</span><span class="v" data-t="866">0</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="p-title">告警日志</div>
+        <div class="kpis">
+          <div class="kpi"><span class="k">CRIT</span><span class="v" style="color:#fb7185">2</span></div>
+          <div class="kpi"><span class="k">WARN</span><span class="v" style="color:#fbbf24">7</span></div>
+          <div class="kpi"><span class="k">INFO</span><span class="v" style="color:#34d399">23</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta">颠覆UI ⑤ · 数据大屏指挥中心</div>
+
+<script>
+  // KPI 数字滚动
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const target = parseFloat(el.dataset.t);
+    const dec = parseInt(el.dataset.d) || 0;
+    function tick(){
+      const start = performance.now(); const dur = 1800;
+      function step(now){
+        let p = Math.min((now-start)/dur, 1);
+        const e = 1 - Math.pow(1-p, 3);
+        el.firstChild.textContent = (target*e).toFixed(dec).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (p<1) requestAnimationFrame(step);
+        else setTimeout(()=>{ el.firstChild.textContent = '0'; setTimeout(tick, 400); }, 1600);
+      }
+      requestAnimationFrame(step);
+    }
+    setTimeout(tick, 300);
+  });
+
+  // 折线图
+  const cv = document.getElementById('chart'); const c = cv.getContext('2d');
+  let W, H;
+  function size(){ W = cv.width = cv.offsetWidth*2; H = cv.height = cv.offsetHeight*2; }
+  size(); addEventListener('resize', size);
+  const pts = []; for (let i=0;i<60;i++) pts.push(0.5 + Math.random()*0.4);
+  function chart(){
+    c.clearRect(0,0,W,H);
+    // 网格
+    c.strokeStyle = 'rgba(34,211,238,0.1)'; c.lineWidth = 1;
+    for (let y=0;y<H;y+=H/4){ c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
+    // 折线
+    c.beginPath();
+    pts.forEach((v,i)=>{ const x = i/59*W, y = H - v*H; i ? c.lineTo(x,y) : c.moveTo(x,y); });
+    c.strokeStyle = '#22d3ee'; c.lineWidth = 2; c.shadowColor = 'rgba(34,211,238,0.6)'; c.shadowBlur = 8; c.stroke();
+    c.shadowBlur = 0;
+    // 填充
+    c.lineTo(W,H); c.lineTo(0,H); c.closePath();
+    c.fillStyle = 'rgba(34,211,238,0.08)'; c.fill();
+    // 滚动
+    pts.push(0.5 + Math.random()*0.4); pts.shift();
+    requestAnimationFrame(chart);
+  }
+  chart();
+
+  // 顶栏时间
+  const status = document.querySelector('.topbar .status');
+  setInterval(()=>{
+    const d = new Date();
+    status.innerHTML = 'SYS <em>●</em> ONLINE · ' +
+      [d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+  }, 1000);
+</script>
+</body>
+</html>

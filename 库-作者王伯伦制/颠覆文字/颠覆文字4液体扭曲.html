@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ④ — 液体扭曲 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0e14;
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    color: #cdeeff; overflow: hidden;
+  }
+  /* 主体就是字：被水波滤镜扭曲 */
+  .word { display: block; font-size: 200px; font-weight: 700;
+    filter: url(#ripple); text-shadow: 0 6px 24px rgba(0,90,180,0.4); }
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(205,238,255,0.4); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; font-family: "Segoe UI", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <span class="word">海</span>
+
+  <!-- SVG 水波扭曲滤镜：只作用于字 -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="ripple">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2"
+          seed="4" result="noise">
+          <animate attributeName="baseFrequency" dur="6s"
+            values="0.012 0.018;0.015 0.024;0.012 0.018" repeatCount="indefinite"/>
+          <animate attributeName="seed" dur="9s" values="4;9;4" repeatCount="indefinite"/>
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="34"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="meta">颠覆文字 ④ · 液体扭曲</div>
+
+</body>
+</html>

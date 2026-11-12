@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑩ — 字里星空 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #04060c;
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* "夜"字：内部装着一片星空 */
+  .sky {
+    position: relative; display: inline-block;
+    font-size: 230px; font-weight: 400; letter-spacing: 0;
+    color: transparent; -webkit-text-fill-color: transparent;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 40% 60%, #ffe9a8, transparent),
+      radial-gradient(1.5px 1.5px at 55% 25%, #fff, transparent),
+      radial-gradient(1px 1px at 70% 55%, #cfe8ff, transparent),
+      radial-gradient(1.5px 1.5px at 30% 75%, #fff, transparent),
+      radial-gradient(1px 1px at 85% 35%, #ffe9a8, transparent),
+      radial-gradient(1.2px 1.2px at 60% 80%, #fff, transparent),
+      radial-gradient(ellipse at 50% 42%, #1a2a5a 0%, #0c1530 55%, #05070f 100%);
+    -webkit-background-clip: text; background-clip: text;
+    animation: starTwinkle 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 18px rgba(120,160,255,0.25));
+  }
+  /* 星星闪烁 + 星云缓慢流转 */
+  @keyframes starTwinkle {
+    0%,100% { opacity: 0.9; }
+    50% { opacity: 1; }
+  }
+
+  .sub { margin-top: 8px; font-size: 14px; letter-spacing: 6px; color: rgba(160,180,220,0.5); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(170,190,225,0.4); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <span class="sky">夜</span>
+    <div class="sub">一个字 · 一片星空</div>
+  </div>
+
+  <div class="meta">颠覆文字 ⑩ · 字里星空</div>
+
+<script>
+  // 预留：可换字，也可换背景（把 .sky 的 background-image 换成海/山/森林等场景）
+</script>
+</body>
+</html>

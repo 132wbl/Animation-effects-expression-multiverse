@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海浪 Canvas Ocean — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.ocean{width:100%;height:100%}
+</style>
+</head>
+<body>
+  <canvas class="ocean"></canvas>
+<script>const c=document.querySelector('.ocean');const ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;let t=0;function wave(y,amp,freq,color){ctx.beginPath();ctx.moveTo(0,y);for(let x=0;x<=c.width;x+=4)ctx.lineTo(x,y+Math.sin(x*freq+t)*amp);ctx.lineTo(c.width,c.height);ctx.lineTo(0,c.height);ctx.fillStyle=color;ctx.fill();}(function tick(){ctx.fillStyle='#0a1a3a';ctx.fillRect(0,0,c.width,c.height);wave(c.height*0.5,16,0.02,'hsl(200 80% 40%)');wave(c.height*0.62,12,0.03,'hsl(210 80% 50%)');wave(c.height*0.74,8,0.04,'hsl(200 90% 60%)');t+=0.05;requestAnimationFrame(tick);})();</script>
+</body>
+</html>

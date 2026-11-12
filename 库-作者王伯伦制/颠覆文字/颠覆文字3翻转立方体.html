@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ③ — 翻转立方体 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #151227, #08060f 85%);
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; perspective: 1100px; }
+
+  /* 3D 立方体字 */
+  .cube3d { position: relative; width: 200px; height: 200px; margin: 40px auto;
+    transform-style: preserve-3d; animation: rot 9s linear infinite; }
+  .face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 104px; font-weight: 700; color: #fff;
+    backface-visibility: visible;
+    border-radius: 14px;
+    box-shadow: inset 0 0 30px rgba(255,255,255,0.12), 0 12px 30px rgba(0,0,0,0.5);
+  }
+  .face .f { text-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+
+  /* 六个面，每个不同配色渐变 */
+  .f-front  { transform: translateZ(100px); background: linear-gradient(160deg,#6ee7f9,#0891b2); }
+  .f-back   { transform: rotateY(180deg) translateZ(100px); background: linear-gradient(160deg,#fb7185,#be123c); }
+  .f-right  { transform: rotateY(90deg) translateZ(100px); background: linear-gradient(160deg,#a78bfa,#6d28d9); }
+  .f-left   { transform: rotateY(-90deg) translateZ(100px); background: linear-gradient(160deg,#fbbf24,#d97706); }
+  .f-top    { transform: rotateX(90deg) translateZ(100px); background: linear-gradient(160deg,#34d399,#047857); }
+  .f-bottom { transform: rotateX(-90deg) translateZ(100px); background: linear-gradient(160deg,#f0abfc,#a21caf); }
+  @keyframes rot { from { transform: rotateX(-12deg) rotateY(0); } to { transform: rotateX(-12deg) rotateY(360deg); } }
+
+  /* 底部光晕投影 */
+  .glow { width: 240px; height: 26px; margin: 30px auto 0; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(167,139,250,0.45), transparent 70%);
+    animation: glowPulse 9s linear infinite; }
+  @keyframes glowPulse { from { transform: scale(1); opacity:0.6; } to { transform: scale(1); opacity:0.6; } }
+
+  .sub { margin-top: 8px; font-size: 15px; letter-spacing: 6px; color: rgba(200,190,255,0.5); }
+  .sub b { color: #a78bfa; font-weight: 600; }
+
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(200,190,255,0.5); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; z-index: 2; font-family: "Segoe UI", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="cube3d">
+      <div class="face f-front"><span class="f">翻</span></div>
+      <div class="face f-back"><span class="f">转</span></div>
+      <div class="face f-right"><span class="f">立</span></div>
+      <div class="face f-left"><span class="f">方</span></div>
+      <div class="face f-top"><span class="f">3D</span></div>
+      <div class="face f-bottom"><span class="f">旋</span></div>
+    </div>
+    <div class="glow"></div>
+    <div class="sub"><b>翻 · 转 · 立 · 方</b></div>
+  </div>
+
+  <div class="meta">颠覆文字 ③ · 翻转立方体</div>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆UI ⑭ — 相机取景框 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #14181e, #05070a 85%);
+    font-family: "Consolas", "Courier New", monospace; color: #7dffa8; overflow: hidden;
+  }
+
+  /* 取景框容器 */
+  .finder { position: relative; width: 520px; height: 340px; border-radius: 12px; }
+
+  /* 预览画面（像镜头看到的，轻微动效） */
+  .preview { position: absolute; inset: 0; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(160deg, #101820, #0a0f14); }
+  .preview .scene { position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 30% 40%, rgba(80,140,180,0.25), transparent 60%),
+      radial-gradient(circle at 75% 70%, rgba(180,120,80,0.2), transparent 55%),
+      linear-gradient(180deg, transparent, rgba(255,255,255,0.03));
+    animation: scenePulse 6s ease-in-out infinite; }
+  @keyframes scenePulse { 0%,100%{ filter: brightness(1); } 50%{ filter: brightness(1.15); } }
+
+  /* 三分法网格 */
+  .grid3 { position: absolute; inset: 0; opacity: 0.35; pointer-events: none; }
+  .grid3::before { content:''; position:absolute; left:33.3%; top:0; bottom:0; width:1px; background: rgba(125,255,168,0.5); }
+  .grid3::after { content:''; position:absolute; left:66.6%; top:0; bottom:0; width:1px; background: rgba(125,255,168,0.5); }
+  .grid3 span { position: absolute; left:0; right:0; height:1px; background: rgba(125,255,168,0.5); }
+  .grid3 span:first-child { top:33.3%; } .grid3 span:last-child { top:66.6%; }
+
+  /* 十字准星 */
+  .cross { position: absolute; left:50%; top:50%; transform: translate(-50%,-50%); width: 60px; height: 60px; opacity: 0.8; }
+  .cross i { position: absolute; background: rgba(125,255,168,0.9); }
+  .cross .h { left:0; right:0; top:50%; height:1px; margin-top:-0.5px; }
+  .cross .v { top:0; bottom:0; left:50%; width:1px; margin-left:-0.5px; }
+  .cross b { position: absolute; left:50%; top:50%; width:6px; height:6px; transform:translate(-50%,-50%); border-radius:50%; background:#7dffa8; box-shadow: 0 0 8px #7dffa8; }
+
+  /* 对焦框（呼吸） */
+  .focus { position: absolute; left:50%; top:50%; transform: translate(-50%,-50%); width: 90px; height: 90px;
+    border: 2px solid rgba(125,255,168,0.85); border-radius: 4px;
+    box-shadow: 0 0 10px rgba(125,255,168,0.3); animation: focusBreath 2.2s ease-in-out infinite; }
+  .focus::before,.focus::after { content:''; position:absolute; background:#7dffa8; }
+  .focus::before{ left:-12px; right:-12px; top:-2px; height:2px; }
+  .focus::after{ top:-12px; bottom:-12px; left:-2px; width:2px; }
+  @keyframes focusBreath { 0%,100%{ opacity:0.6; transform: translate(-50%,-50%) scale(1); } 50%{ opacity:1; transform: translate(-50%,-50%) scale(1.08); } }
+
+  /* 取景框四角 */
+  .vignette { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 60px rgba(0,0,0,0.6); border-radius: 12px; }
+  .corner { position: absolute; width: 26px; height: 26px; border: 2px solid rgba(125,255,168,0.9); }
+  .corner.tl{ top:6px; left:6px; border-right:none; border-bottom:none; }
+  .corner.tr{ top:6px; right:6px; border-left:none; border-bottom:none; }
+  .corner.bl{ bottom:6px; left:6px; border-right:none; border-top:none; }
+  .corner.br{ bottom:6px; right:6px; border-left:none; border-top:none; }
+
+  /* HUD 信息 */
+  .hud { position: absolute; font-size: 12px; letter-spacing: 1px; color: rgba(125,255,168,0.85); text-shadow: 0 0 4px rgba(125,255,168,0.4); }
+  .hud.tl { top:14px; left:18px; }
+  .hud.tr { top:14px; right:18px; text-align:right; }
+  .hud.bl { bottom:14px; left:18px; }
+  .hud.br { bottom:14px; right:18px; text-align:right; }
+
+  /* 快门按钮 */
+  .shutter { position: relative; margin: 34px auto 0; width: 64px; height: 64px; border-radius: 50%;
+    background: radial-gradient(circle at 50% 35%, #e8edf2, #9aa4ad); cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5); border: none; transition: all 0.15s; }
+  .shutter:hover { transform: scale(1.06); }
+  .shutter:active { transform: scale(0.94); }
+  .shutter::after { content:''; position:absolute; inset:9px; border-radius:50%; background: radial-gradient(circle at 50% 35%, #f5f7fa, #b8c2ca); box-shadow: inset 0 2px 3px rgba(255,255,255,0.6); }
+  .shutter b { position: absolute; inset: 0; border-radius: 50%; background: #fff; opacity:0; }
+  .shutter.flash b { animation: shutterFlash 0.4s ease-out; }
+  @keyframes shutterFlash { 0%{opacity:0.9} 100%{opacity:0} }
+
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(125,255,168,0.5); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="finder">
+    <div class="preview"><div class="scene"></div></div>
+    <div class="grid3"><span></span><span></span></div>
+    <div class="cross"><i class="h"></i><i class="v"></i><b></b></div>
+    <div class="focus"></div>
+    <div class="vignette"></div>
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+
+    <div class="hud tl">F/1.8 · 1/250s</div>
+    <div class="hud tr">ISO 100<br>RAW</div>
+    <div class="hud bl">◉ REC 00:12</div>
+    <div class="hud br">AF ● ● ● ○<br>BAT 87%</div>
+  </div>
+
+  <button class="shutter" id="shutter"><b></b></button>
+
+  <div class="meta">颠覆UI ⑭ · 相机取景框</div>
+
+<script>
+  // 点击快门：闪光
+  const shutter = document.getElementById('shutter');
+  shutter.addEventListener('click', ()=>{
+    shutter.classList.remove('flash');
+    void shutter.offsetWidth;
+    shutter.classList.add('flash');
+  });
+</script>
+</body>
+</html>

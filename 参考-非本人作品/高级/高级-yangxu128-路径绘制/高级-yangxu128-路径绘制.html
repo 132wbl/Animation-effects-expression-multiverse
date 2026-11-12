@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>路径绘制 SVG Path Draw — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.svg-draw{width:240px;height:120px}.svg-draw .p{stroke-dasharray:400;stroke-dashoffset:400;animation:draw var(--duration,3s) ease-in-out infinite alternate}@keyframes draw{to{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+  <svg class="svg-draw" viewBox="0 0 200 100"><path class="p" d="M10,80 C40,10 70,90 100,40 S160,90 190,30" fill="none" stroke="hsl(280 90% 60%)" stroke-width="3"/></svg>
+
+</body>
+</html>

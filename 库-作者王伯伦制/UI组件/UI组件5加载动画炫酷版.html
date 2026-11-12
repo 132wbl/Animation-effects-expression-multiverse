@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI组件 五 — 加载动画·炫酷版 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0e14;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+  }
+  .stage { max-width: 900px; text-align: center; }
+  .title { font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .card {
+    width: 250px; min-height: 160px; border-radius: 14px;
+    background: #141a22; border: 1px solid #222b36;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    padding: 18px;
+  }
+  .card .label { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+
+  /* 1 量子旋转环：双环对转 + 光点 + 残影 */
+  .quantum { position: relative; width: 52px; height: 52px; }
+  .quantum i { position: absolute; inset: 0; border-radius: 50%; }
+  .quantum i:first-child { border: 3px solid transparent; border-top-color: #22d3ee; border-bottom-color: #22d3ee; animation: qspin 1s linear infinite; }
+  .quantum i:nth-child(2){ border: 3px solid transparent; border-left-color: #a78bfa; border-right-color: #a78bfa; animation: qspin 1.4s linear infinite reverse; }
+  .quantum i:nth-child(3){ inset: 9px; border: 2px solid transparent; border-top-color: #f0abfc; animation: qspin 0.7s linear infinite; }
+  .quantum b { position: absolute; inset: 19px; border-radius: 50%; background: #fff; filter: blur(0.5px);
+    box-shadow: 0 0 10px #fff, 0 0 20px #22d3ee; animation: qpulse 1s ease-in-out infinite; }
+  @keyframes qspin { to { transform: rotate(360deg); } }
+  @keyframes qpulse { 0%,100%{transform:scale(0.8);opacity:0.7} 50%{transform:scale(1.1);opacity:1} }
+
+  /* 2 机械齿轮：两个齿轮咬合转动 */
+  .gear { position: relative; width: 56px; height: 32px; }
+  .gear i { position: absolute; top: 4px; width: 26px; height: 26px; }
+  .gear i::before { content:''; position:absolute; inset:0; border-radius:50%; background: radial-gradient(circle at 50% 50%, #8b5cf6, #4c1d95); box-shadow: inset 0 0 0 4px rgba(0,0,0,0.3); }
+  .gear i::after { content:''; position:absolute; inset:6px; border-radius:50%; background:#141a22; box-shadow: 0 0 0 3px rgba(255,255,255,0.5); }
+  .gear i:first-child { left: 0px; animation: gearA 2s linear infinite; }
+  .gear i:nth-child(2){ left: 34px; top: 10px; transform: scale(0.7); animation: gearB 2s linear infinite reverse; }
+  @keyframes gearA { to { transform: rotate(360deg); } }
+  @keyframes gearB { to { transform: scale(0.7) rotate(-360deg); } }
+
+  /* 3 黑洞引力：粒子被吸入中心 */
+  .blackhole { position: relative; width: 60px; height: 60px; }
+  .blackhole b { position: absolute; left:50%; top:50%; width:16px; height:16px; transform:translate(-50%,-50%);
+    border-radius:50%; background:#0a0e14; box-shadow: 0 0 18px #a78bfa, 0 0 30px #6d28d9, inset 0 0 8px #000; z-index:2; }
+  .blackhole span { position:absolute; left:50%; top:50%; width:8px; height:8px; margin:-4px 0 0 -4px; border-radius:50%;
+    background: radial-gradient(circle,#f0abfc,#a78bfa); animation: fall 1.2s ease-in infinite; }
+  .blackhole span:nth-child(1){ animation-delay:0s; }
+  .blackhole span:nth-child(2){ animation-delay:0.3s; }
+  .blackhole span:nth-child(3){ animation-delay:0.6s; }
+  .blackhole span:nth-child(4){ animation-delay:0.9s; }
+  @keyframes fall { 0%{ transform: rotate(0deg) translateX(22px) rotate(0deg) scale(1); opacity:1; }
+    100%{ transform: rotate(360deg) translateX(3px) rotate(-360deg) scale(0.3); opacity:0; } }
+
+  /* 4 霓虹心电图：脉冲线 */
+  .ecg { position: relative; width: 170px; height: 44px; overflow: hidden; }
+  .ecg svg { width: 170px; height: 44px; }
+  .ecg path { fill:none; stroke:#f43f5e; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray: 220; stroke-dashoffset: 220; animation: ecg 1.6s linear infinite; filter: drop-shadow(0 0 6px rgba(244,63,94,0.8)); }
+  @keyframes ecg { to { stroke-dashoffset: -220; } }
+
+  /* 5 流光跑马灯（升级）：渐变光扫过文字 */
+  .marquee { width: 180px; overflow: hidden; white-space: nowrap; }
+  .marquee span { display: inline-block; letter-spacing: 8px; font-weight: 700; font-size: 16px;
+    background: linear-gradient(90deg,#22d3ee,#a78bfa,#f0abfc,#22d3ee); background-size: 300% 100%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: marq 2.2s linear infinite; }
+  @keyframes marq { 0%{transform:translateX(100%);background-position:0% 0} 100%{transform:translateX(-100%);background-position:300% 0} }
+
+  /* 6 星云旋涡：渐变色流旋转 */
+  .vortex { width: 52px; height: 52px; border-radius: 50%;
+    background: conic-gradient(from 0deg, #22d3ee, #a78bfa, #f0abfc, #22d3ee);
+    -webkit-mask: radial-gradient(circle, transparent 34%, #000 36%);
+            mask: radial-gradient(circle, transparent 34%, #000 36%);
+    animation: vortex 1.2s linear infinite; }
+  @keyframes vortex { to { transform: rotate(360deg); } }
+
+  /* 7 扫描环：环形扫描线转圈 */
+  .scan { position: relative; width: 52px; height: 52px; border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(59,130,246,0.9), transparent 60deg);
+    -webkit-mask: radial-gradient(circle, transparent 34%, #000 36%);
+            mask: radial-gradient(circle, transparent 34%, #000 36%);
+    animation: vortex 1.4s linear infinite; }
+  .scan::after { content:''; position:absolute; inset:0; border-radius:50%;
+    border:1px solid rgba(59,130,246,0.25); }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="title">UI组件 五 · 加载动画 · 炫酷版</div>
+
+    <div class="grid">
+      <div class="card"><div class="quantum"><i></i><i></i><i></i><b></b></div><div class="label">量子环</div></div>
+      <div class="card"><div class="gear"><i></i><i></i></div><div class="label">机械齿轮</div></div>
+      <div class="card"><div class="blackhole"><b></b><span></span><span></span><span></span><span></span></div><div class="label">黑洞引力</div></div>
+      <div class="card"><div class="ecg"><svg viewBox="0 0 170 44"><path d="M2 24 H40 L48 24 L56 14 L66 32 L76 24 H96 L104 24 L112 14 L122 32 L132 24 H168"/></svg></div><div class="label">心电图</div></div>
+      <div class="card"><div class="marquee"><span>流光加载</span></div><div class="label">流光跑马灯</div></div>
+      <div class="card"><div class="vortex"></div><div class="label">星云旋涡</div></div>
+      <div class="card"><div class="scan"></div><div class="label">扫描环</div></div>
+    </div>
+  </div>
+
+  <div class="meta">UI组件 五 · 加载动画·炫酷版</div>
+
+</body>
+</html>

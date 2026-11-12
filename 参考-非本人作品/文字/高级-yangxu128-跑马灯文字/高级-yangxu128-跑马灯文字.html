@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跑马灯文字 Text Marquee — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.text-marquee{overflow:hidden;white-space:nowrap;font-size:40px;font-weight:900}.text-marquee span{display:inline-block;animation:marquee var(--duration,10s) linear infinite}@keyframes marquee{to{transform:translateX(-100%)}}
+</style>
+</head>
+<body>
+  <div class="text-marquee"><span>Motion &middot; 动效库 &middot; </span><span>Motion &middot; 动效库 &middot; </span></div>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑤ — 故障撕裂 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0b0d10;
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif; overflow: hidden;
+  }
+
+  /* glitch 字容器 */
+  .glitch { position: relative; display: inline-block; font-size: 190px; font-weight: 700;
+    color: #e8eef2; letter-spacing: 4px; }
+
+  /* 主体字 */
+  .glitch::before { content: attr(data-text); position: absolute; inset: 0;
+    color: #ff2d55; clip-path: inset(0 0 0 0); animation: clipA 2.6s steps(2) infinite; }
+  .glitch::after { content: attr(data-text); position: absolute; inset: 0;
+    color: #22d3ee; clip-path: inset(0 0 0 0); animation: clipB 3.1s steps(2) infinite; }
+
+  @keyframes clipA {
+    0%,12%{ clip-path: inset(0 0 88% 0); transform: translate(-6px,0); }
+    13%,25%{ clip-path: inset(60% 0 12% 0); transform: translate(6px,0); }
+    26%,38%{ clip-path: inset(30% 0 45% 0); transform: translate(-4px,0); }
+    39%,50%{ clip-path: inset(75% 0 5% 0); transform: translate(5px,0); }
+    51%,62%{ clip-path: inset(10% 0 70% 0); transform: translate(-6px,0); }
+    63%,100%{ clip-path: inset(0 0 100% 0); transform: translate(0,0); }
+  }
+  @keyframes clipB {
+    0%,20%{ clip-path: inset(0 0 100% 0); transform: translate(0,0); }
+    21%,33%{ clip-path: inset(45% 0 25% 0); transform: translate(5px,0); }
+    34%,46%{ clip-path: inset(12% 0 72% 0); transform: translate(-5px,0); }
+    47%,58%{ clip-path: inset(68% 0 8% 0); transform: translate(6px,0); }
+    59%,100%{ clip-path: inset(0 0 100% 0); transform: translate(0,0); }
+  }
+
+  /* 整体抖动 */
+  .glitch { animation: jitter 0.18s steps(2) infinite; }
+  @keyframes jitter {
+    0%{ transform: translate(0,0); }
+    25%{ transform: translate(-1px,1px); }
+    50%{ transform: translate(1px,-1px); }
+    75%{ transform: translate(-1px,0); }
+    100%{ transform: translate(1px,1px); }
+  }
+
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(232,238,242,0.4); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; font-family: "Segoe UI", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <span class="glitch" data-text="裂">裂</span>
+
+  <div class="meta">颠覆文字 ⑤ · 故障撕裂</div>
+
+</body>
+</html>

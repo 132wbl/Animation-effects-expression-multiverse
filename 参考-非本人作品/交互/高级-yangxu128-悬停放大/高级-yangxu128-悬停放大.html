@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悬停放大 Hover Scale — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.hscale{width:260px;height:180px;background:linear-gradient(135deg,#6366f1,#22d3ee);border-radius:16px;transition:transform var(--duration,0.5s) cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;color:#fff}.hscale:hover{transform:scale(1.12)}
+</style>
+</head>
+<body>
+  <div class="hscale">Hover</div>
+
+</body>
+</html>

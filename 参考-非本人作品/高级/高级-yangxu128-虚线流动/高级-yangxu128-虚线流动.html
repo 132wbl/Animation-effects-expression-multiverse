@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>虚线流动 SVG Dash Animate — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.svg-dash{width:240px;height:120px}.svg-dash .p{animation:dash var(--duration,1.5s) linear infinite}@keyframes dash{to{stroke-dashoffset:-28}}
+</style>
+</head>
+<body>
+  <svg class="svg-dash" viewBox="0 0 200 100"><path class="p" d="M10,50 L60,20 L110,80 L160,30 L190,60" fill="none" stroke="hsl(200 90% 55%)" stroke-width="3" stroke-dasharray="8 6"/></svg>
+
+</body>
+</html>

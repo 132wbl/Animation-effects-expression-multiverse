@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>水流波纹 Water Ripple — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.water{position:relative;width:100%;height:100%;background:hsl(200 80% 45%);border-radius:16px;cursor:pointer;overflow:hidden}.water .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:24px;letter-spacing:.2em;pointer-events:none}.water .ring{position:absolute;border-radius:50%;border:3px solid rgba(255,255,255,0.8);pointer-events:none}
+</style>
+</head>
+<body>
+  <div class="water" id="water"><span class="hint">CLICK</span></div>
+<script>const water=document.getElementById('water');water.addEventListener('click',e=>{const r=water.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;for(let i=0;i<3;i++){const ring=document.createElement('div');ring.className='ring';ring.style.left=x+'px';ring.style.top=y+'px';ring.style.width=ring.style.height='10px';ring.style.transform='translate(-50%,-50%)';ring.style.transition='all 1s ease';ring.style.opacity=1;water.appendChild(ring);requestAnimationFrame(()=>{ring.style.width=ring.style.height=(200+i*80)+'px';ring.style.opacity=0;});setTimeout(()=>ring.remove(),1000);}});</script>
+</body>
+</html>

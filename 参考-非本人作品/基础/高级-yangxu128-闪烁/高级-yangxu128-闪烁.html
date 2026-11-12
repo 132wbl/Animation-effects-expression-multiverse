@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>闪烁 Flash — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .flash{animation:flash var(--duration,1s) ease-in-out infinite}@keyframes flash{0%,50%,100%{opacity:1}25%,75%{opacity:0.2}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:1s" -->
+  <div class="flash">NEW</div>
+</body>
+</html>

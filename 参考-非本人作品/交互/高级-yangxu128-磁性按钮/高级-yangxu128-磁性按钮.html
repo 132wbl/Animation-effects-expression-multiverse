@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>磁性按钮 Magnetic Button — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.mag-btn{width:200px;height:60px;background:#e879f9;color:#fff;border-radius:30px;display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer;transition:transform .2s ease}
+</style>
+</head>
+<body>
+  <div class="mag-btn">Magnet</div>
+<script>const el=document.querySelector('.mag-btn');const zone=el.parentElement;zone.addEventListener('mousemove',e=>{const r=zone.getBoundingClientRect();const dx=(e.clientX-r.left-r.width/2)*0.3;const dy=(e.clientY-r.top-r.height/2)*0.3;el.style.transform=`translate(${dx}px,${dy}px)`});zone.addEventListener('mouseleave',()=>{el.style.transform='translate(0,0)'});</script>
+</body>
+</html>

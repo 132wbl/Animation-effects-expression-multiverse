@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悬停倾斜 Hover Tilt — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.tilt{width:200px;height:140px;background:#fff;color:#1e293b;border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;transition:transform .15s ease;transform-style:preserve-3d;will-change:transform}
+</style>
+</head>
+<body>
+  <div class="tilt">Tilt</div>
+<script>const el=document.querySelector('.tilt');el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect();const rx=(e.clientY-r.top-r.height/2)/r.height;const ry=(e.clientX-r.left-r.width/2)/r.width;el.style.transform=`rotateX(${-rx*15}deg) rotateY(${ry*15}deg)`});el.addEventListener('mouseleave',()=>{el.style.transform='rotateX(0) rotateY(0)'});</script>
+</body>
+</html>

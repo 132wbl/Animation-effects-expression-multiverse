@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星空穿越 Canvas Starfield — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.stars{width:100%;height:100%}
+</style>
+</head>
+<body>
+  <canvas class="stars"></canvas>
+<script>const c=document.querySelector('.stars');const ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const stars=[];for(let i=0;i<400;i++)stars.push({x:(Math.random()-0.5)*c.width,y:(Math.random()-0.5)*c.height,z:Math.random()*c.width});(function tick(){ctx.fillStyle='#05060f';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';stars.forEach(s=>{s.z-=4;if(s.z<=0)s.z=c.width;const k=160/s.z;const x=s.x*k+c.width/2,y=s.y*k+c.height/2;const r=(1-s.z/c.width)*2.5;ctx.fillRect(x,y,r,r);});requestAnimationFrame(tick);})();</script>
+</body>
+</html>

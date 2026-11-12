@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弹性入场 Elastic In — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .elastic-in{animation:elasticIn var(--duration,1s) cubic-bezier(0.68,-0.55,0.27,1.55) both}@keyframes elasticIn{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:1s" -->
+  <div class="elastic-in">Elastic</div>
+</body>
+</html>

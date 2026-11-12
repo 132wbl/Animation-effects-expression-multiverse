@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI组件 F — 动态按钮·进阶 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0e14;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+  }
+  .stage { max-width: 720px; text-align: center; }
+  .title { font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+  .row { display: flex; flex-wrap: wrap; justify-content: center; gap: 26px; margin: 20px 0; }
+
+  button { position: relative; overflow: hidden; border: none; cursor: pointer;
+    font-size: 16px; font-weight: 600; letter-spacing: 1px; padding: 15px 32px;
+    border-radius: 10px; color: #fff; background: transparent; transition: transform 0.2s; }
+
+  /* 1 霓虹描边：悬停彩色霓虹光边缘 */
+  .btn-neon { border: 2px solid #22d3ee; color: #22d3ee; background: rgba(34,211,238,0.05); box-shadow: 0 0 8px rgba(34,211,238,0.3), inset 0 0 8px rgba(34,211,238,0.1); }
+  .btn-neon:hover { color:#fff; background:#22d3ee; box-shadow: 0 0 26px rgba(34,211,238,0.9), inset 0 0 12px rgba(255,255,255,0.5); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
+
+  /* 2 液态水波：悬停内部波浪流动 */
+  .btn-liquid { background: linear-gradient(90deg,#0891b2,#22d3ee); }
+  .btn-liquid::before { content:''; position:absolute; inset:0; opacity:0;
+    background: radial-gradient(circle at 50% -30%, rgba(255,255,255,0.5), transparent 60%); animation: wave 1s ease-in-out infinite; }
+  .btn-liquid:hover::before { opacity:1; }
+  .btn-liquid::after { content:''; position:absolute; left:0; right:0; bottom:0; height:40%;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.35)); transform: translateY(100%); transition: transform 0.4s ease; }
+  .btn-liquid:hover::after { transform: translateY(40%); }
+  @keyframes wave { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+  /* 3 磁性吸附：靠近光标时按钮轻微吸向光标（JS实现） */
+  .btn-magnet { background: linear-gradient(135deg,#f43f5e,#fb7185); }
+
+  /* 4 3D 立体：悬停按压/浮起 */
+  .btn-3d { background: linear-gradient(180deg,#8b5cf6,#7c3aed); box-shadow: 0 8px 0 #5b21b6; transform: translateY(0); }
+  .btn-3d:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #5b21b6; }
+  .btn-3d:active { transform: translateY(5px); box-shadow: 0 3px 0 #5b21b6; }
+
+  /* 5 粒子迸发：点击从按钮迸发彩色粒子（JS实现） */
+  .btn-spark { background: linear-gradient(135deg,#f59e0b,#f97316); }
+
+  /* 6 文字变形：悬停文字轻微拉伸变形 */
+  .btn-distort { background: #10b981; }
+  .btn-distort span { display: inline-block; transition: transform 0.3s cubic-bezier(0.68,-0.55,0.265,1.55); }
+  .btn-distort:hover span:nth-child(odd){ transform: translateY(-4px) skewX(-10deg); }
+  .btn-distort:hover span:nth-child(even){ transform: translateY(4px) skewX(10deg); }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="title">UI组件 F · 动态按钮·进阶</div>
+
+    <div class="row">
+      <button class="btn-neon">霓虹</button>
+      <button class="btn-liquid">液态</button>
+      <button class="btn-magnet" id="magnet">磁吸</button>
+    </div>
+    <div class="row">
+      <button class="btn-3d">3D立体</button>
+      <button class="btn-spark" id="spark">粒子</button>
+      <button class="btn-distort"><span>文</span><span>字</span><span>变</span><span>形</span></button>
+    </div>
+  </div>
+
+  <div class="meta">UI组件 F · 动态按钮·进阶</div>
+
+<script>
+  // 3 磁性吸附
+  const mag = document.getElementById('magnet');
+  document.addEventListener('mousemove', e => {
+    const r = mag.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    const dx = e.clientX - cx, dy = e.clientY - cy;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 120) {
+      const pull = (120 - dist) / 120 * 14;
+      mag.style.transform = `translate(${(dx/dist)*pull}px, ${(dy/dist)*pull}px)`;
+    } else {
+      mag.style.transform = 'translate(0,0)';
+    }
+  });
+
+  // 5 粒子迸发
+  const spark = document.getElementById('spark');
+  const colors = ['#f59e0b','#f97316','#22d3ee','#a78bfa','#f43f5e','#f0abfc'];
+  spark.addEventListener('click', e => {
+    const r = spark.getBoundingClientRect();
+    const x0 = e.clientX - r.left, y0 = e.clientY - r.top;
+    for (let i=0;i<16;i++){
+      const p = document.createElement('b');
+      p.style.cssText = `position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:7px;height:7px;border-radius:50%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};pointer-events:none;z-index:99;
+        transform:translate(-50%,-50%);transition:all 0.6s ease-out;`;
+      document.body.appendChild(p);
+      const a = Math.random()*Math.PI*2;
+      const d = 50 + Math.random()*70;
+      requestAnimationFrame(()=>{
+        p.style.left = (e.clientX + Math.cos(a)*d) + 'px';
+        p.style.top  = (e.clientY + Math.sin(a)*d) + 'px';
+        p.style.opacity = '0';
+      });
+      setTimeout(()=>p.remove(), 650);
+    }
+  });
+</script>
+</body>
+</html>

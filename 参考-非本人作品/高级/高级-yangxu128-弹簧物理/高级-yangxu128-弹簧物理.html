@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弹簧物理 Spring Physics — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.spring-zone{position:relative;width:100%;height:100%;background:#1e293b;border-radius:16px;cursor:grab;overflow:hidden}.spring-zone .ball-s{position:absolute;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,hsl(20 90% 60%),hsl(0 80% 40%));box-shadow:0 8px 16px rgba(0,0,0,0.3);top:50%;left:50%;transform:translate(-50%,-50%)}
+</style>
+</head>
+<body>
+  <div class="spring-zone" id="zone"><div class="ball-s"></div></div>
+<script>const zone=document.getElementById('zone');const ball=document.querySelector('.ball-s');let px=zone.offsetWidth/2,py=zone.offsetHeight/2,vx=0,vy=0,drag=false,ox=0,oy=0;zone.addEventListener('mousedown',e=>{drag=true;const r=ball.getBoundingClientRect();ox=e.clientX-(r.left+24);oy=e.clientY-(r.top+24);});window.addEventListener('mousemove',e=>{if(!drag)return;const r=zone.getBoundingClientRect();px=e.clientX-r.left-ox;py=e.clientY-r.top-oy;});window.addEventListener('mouseup',()=>drag=false);(function tick(){if(!drag){const dx=zone.offsetWidth/2-px,dy=zone.offsetHeight/2-py;vx+=dx*0.12;vy+=dy*0.12;vx*=0.88;vy*=0.88;px+=vx;py+=vy;}ball.style.left=(px-24)+'px';ball.style.top=(py-24)+'px';requestAnimationFrame(tick);})();</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数字雨 Matrix Rain — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.mr{width:100%;height:100%;background:#000}
+</style>
+</head>
+<body>
+  <canvas class="mr"></canvas>
+<script>const c=document.querySelector('.mr');const ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const chars='アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789';const fs=14;let cols=Math.floor(c.width/fs*0.7);let drops=new Array(cols).fill(0);(function draw(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#0f0';ctx.font=fs+'px monospace';for(let i=0;i<drops.length;i++){const ch=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(ch,i*fs,drops[i]*fs);if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;drops[i]++;}requestAnimationFrame(draw);})();</script>
+</body>
+</html>

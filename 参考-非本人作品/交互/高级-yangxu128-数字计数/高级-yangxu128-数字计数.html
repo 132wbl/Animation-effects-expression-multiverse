@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数字计数 Count Up — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.count-up{font-size:60px;font-weight:900;color:#4ade80}
+</style>
+</head>
+<body>
+  <div class="count-up">0</div>
+<script>const el=document.querySelector('.count-up');const target=1234;const dur=1500;const start=performance.now();(function tick(now){const p=Math.min((now-start)/dur,1);el.textContent=Math.floor(target*(1-Math.pow(1-p,3))).toLocaleString();if(p<1)requestAnimationFrame(tick);})(start);</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 A — 逐字点亮 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0c0f1a;
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 逐字点亮的文字 */
+  .lit { font-size: 78px; font-weight: 400; letter-spacing: 8px; }
+  .lit span {
+    display: inline-block;
+    color: #3a4055;                      /* 未亮：暗 */
+    opacity: 0.4;
+    transition: color 0.5s, opacity 0.5s, text-shadow 0.5s, transform 0.5s;
+  }
+  .lit span.on {
+    color: #ffe9a8; opacity: 1;
+    text-shadow: 0 0 18px rgba(255,233,168,0.7), 0 0 40px rgba(255,200,120,0.35);
+    transform: translateY(-2px);
+  }
+
+  .sub { margin-top: 26px; font-size: 14px; letter-spacing: 5px; color: rgba(200,210,235,0.45); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.35);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="lit" id="lit">点燃此刻</div>
+    <div class="sub">一字 · 一字亮起</div>
+  </div>
+
+  <div class="meta">文字动效 A · 逐字点亮</div>
+
+<script>
+  const litEl = document.getElementById('lit');
+  // 把每个字包进 span
+  const txt = litEl.textContent;
+  litEl.textContent = '';
+  [...txt].forEach(ch => {
+    const s = document.createElement('span');
+    s.textContent = ch;
+    litEl.appendChild(s);
+  });
+  const spans = [...litEl.children];
+
+  let i = 0;
+  function lightNext(){
+    spans[i].classList.add('on');
+    i++;
+    if (i >= spans.length) {
+      i = 0;
+      setTimeout(() => {
+        spans.forEach(s => s.classList.remove('on'));
+        setTimeout(lightNext, 500);
+      }, 2000);
+    } else {
+      setTimeout(lightNext, 320);
+    }
+  }
+  lightNext();
+</script>
+</body>
+</html>

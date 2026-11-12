@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ② — 自我拆解 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 45%, #141821, #07090e 82%);
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 拆解字容器 */
+  .decom { position: relative; font-size: 130px; font-weight: 400; letter-spacing: 0; color: #e8e4d8; user-select: none; }
+  .decom .p {
+    display: inline-block; transition: transform 0.9s cubic-bezier(0.5,0,0.2,1), opacity 0.9s, filter 0.9s;
+    will-change: transform;
+  }
+  /* 散开状态 */
+  .decom.split .p {
+    opacity: 0.35;
+    filter: blur(2px);
+    transform: translateY(30px);
+  }
+  .decom.split .p:nth-child(1) { transform: translate(-26px, 26px) rotate(-8deg); }
+  .decom.split .p:nth-child(2) { transform: translate(26px, -20px) rotate(7deg); }
+  .decom.split .p:nth-child(3) { transform: translate(4px, 40px) rotate(-4deg); }
+  .decom.split .p:nth-child(4) { transform: translate(-22px, 44px) rotate(6deg); }
+
+  .sub { margin-top: 30px; font-size: 14px; letter-spacing: 5px; color: rgba(210,220,240,0.5); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.35);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="decom" id="decom">明</div>
+    <div class="sub">拆开 · 又拼回</div>
+  </div>
+
+  <div class="meta">颠覆文字 ② · 自我拆解</div>
+
+<script>
+  const decomEl = document.getElementById('decom');
+  // 每个字拆成偏旁（一个偏旁一个 .p）
+  const WORDS = [
+    { text: '明', parts: ['日','月'] },
+    { text: '想', parts: ['相','心'] },
+    { text: '林', parts: ['木','木'] },
+    { text: '昌', parts: ['日','日'] },
+    { text: '旦', parts: ['日','一'] },
+    { text: '们', parts: ['亻','门'] }
+  ];
+  let wi = 0, splitting = false;
+
+  function build(w){
+    decomEl.classList.remove('split');
+    decomEl.innerHTML = '';
+    w.parts.forEach(txt => {
+      const s = document.createElement('span');
+      s.className = 'p';
+      s.textContent = txt;
+      decomEl.appendChild(s);
+    });
+  }
+  build(WORDS[0]);
+
+  function nextWord(){
+    // 拆开
+    decomEl.classList.add('split');
+    setTimeout(() => {
+      // 换下一个字并拼回
+      wi = (wi + 1) % WORDS.length;
+      build(WORDS[wi]);
+      // 强制重排后恢复
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        decomEl.classList.remove('split');
+      }));
+    }, 900);
+  }
+  setInterval(nextWord, 2600);
+</script>
+</body>
+</html>

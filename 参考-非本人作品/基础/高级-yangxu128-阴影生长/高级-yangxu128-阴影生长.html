@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阴影生长 Shadow Grow — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .shadow-grow{animation:shadowGrow var(--duration,2s) ease-in-out infinite;background:#fff;color:#1e293b;padding:20px 44px;border-radius:12px;font-weight:900;font-size:28px}@keyframes shadowGrow{0%,100%{box-shadow:0 4px 12px rgba(0,0,0,0.1)}50%{box-shadow:0 20px 44px rgba(99,102,241,0.45);transform:translateY(-6px)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:2s" -->
+  <div class="shadow-grow">Hover</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>描边文字 Outline Text — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.outline-text{-webkit-text-stroke:2px #e879f9;color:transparent;font-size:56px;font-weight:900;animation:outlinePulse var(--duration,2s) ease-in-out infinite}@keyframes outlinePulse{0%,100%{-webkit-text-stroke:2px #e879f9}50%{-webkit-text-stroke:4px #22d3ee}}
+</style>
+</head>
+<body>
+  <div class="outline-text">Outline</div>
+
+</body>
+</html>

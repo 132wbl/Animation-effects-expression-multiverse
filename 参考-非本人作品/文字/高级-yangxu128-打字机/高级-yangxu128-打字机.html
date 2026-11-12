@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打字机 Typewriter — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.typewriter{font-family:ui-monospace,monospace;font-size:34px;font-weight:700;min-height:1.4em}
+</style>
+</head>
+<body>
+  <div class="typewriter"></div>
+<script>const el=document.querySelector('.typewriter');const txt='你好，我是 Motion.Lab 自研动效库';let i=0;(function type(){el.textContent=txt.slice(0,i++);if(i<=txt.length)setTimeout(type,120);})();</script>
+</body>
+</html>

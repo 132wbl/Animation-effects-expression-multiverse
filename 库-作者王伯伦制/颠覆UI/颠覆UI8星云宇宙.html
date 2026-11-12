@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆UI ⑧ — 星云宇宙界面 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(ellipse at 50% 45%, #0a1030 0%, #060a1c 55%, #020409 100%);
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff; overflow: hidden;
+  }
+
+  /* 旋转星云层 */
+  .nebula { position: fixed; inset: -30%; pointer-events: none; opacity: 0.5; }
+  .nebula i { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.5; mix-blend-mode: screen; }
+  .nebula .n1 { width: 420px; height: 320px; left: 12%; top: 20%;
+    background: radial-gradient(circle, #6d28d9, transparent 70%); animation: drift 22s ease-in-out infinite; }
+  .nebula .n2 { width: 380px; height: 300px; right: 10%; top: 45%;
+    background: radial-gradient(circle, #0ea5e9, transparent 70%); animation: drift 26s ease-in-out infinite reverse; }
+  .nebula .n3 { width: 300px; height: 300px; left: 40%; bottom: -5%;
+    background: radial-gradient(circle, #ec4899, transparent 70%); animation: drift 30s ease-in-out infinite; }
+  @keyframes drift { 0%,100%{ transform: translate(0,0) scale(1); } 50%{ transform: translate(30px,-20px) scale(1.15); } }
+
+  /* 繁星 */
+  .stars { position: fixed; inset: 0; pointer-events: none; }
+  .stars span { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff;
+    opacity: 0.4; animation: twinkle 3s ease-in-out infinite; }
+  .stars span:nth-child(2){ left:20%; top:30%; width:3px; height:3px; animation-delay:0.6s; }
+  .stars span:nth-child(3){ left:70%; top:15%; animation-delay:1s; }
+  .stars span:nth-child(4){ left:85%; top:60%; width:3px; height:3px; animation-delay:1.4s; }
+  .stars span:nth-child(5){ left:10%; top:70%; animation-delay:1.8s; }
+  .stars span:nth-child(6){ left:55%; top:80%; animation-delay:2.2s; }
+  .stars span:nth-child(7){ left:35%; top:10%; width:3px; height:3px; animation-delay:0.3s; }
+  @keyframes twinkle { 0%,100%{ opacity:0.15; } 50%{ opacity:1; } }
+
+  /* 太空面板 */
+  .panel {
+    position: relative; z-index: 2; width: 460px; padding: 30px;
+    border-radius: 20px;
+    background: linear-gradient(160deg, rgba(15,23,42,0.7), rgba(10,15,30,0.5));
+    border: 1px solid rgba(120,150,255,0.25);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 40px rgba(30,60,140,0.15);
+    backdrop-filter: blur(8px);
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
+
+  .p-title { font-size: 18px; letter-spacing: 4px; color: #a5b4fc; margin-bottom: 20px; }
+  .p-title::before { content:'◈ '; }
+
+  .grid { display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+    border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(120,150,255,0.12);
+    transition: all 0.3s; }
+  .row:hover { border-color: rgba(140,170,255,0.4); background: rgba(255,255,255,0.05); }
+  .row .k { font-size: 13px; color: rgba(200,215,255,0.7); letter-spacing: 1px; }
+  .row .v { font-size: 15px; color: #e0e7ff; }
+
+  /* 太空元素按钮 */
+  .btns { display: flex; gap: 12px; margin-top: 20px; }
+  .btn { flex: 1; padding: 14px; border-radius: 12px; border: 1px solid rgba(140,170,255,0.3);
+    background: rgba(30,50,120,0.2); color: #c7d2fe; cursor: pointer; font-size: 14px; letter-spacing: 2px;
+    transition: all 0.3s; }
+  .btn:hover { background: rgba(70,100,220,0.3); box-shadow: 0 0 20px rgba(120,150,255,0.3);
+    transform: translateY(-2px); border-color: rgba(160,190,255,0.6); }
+
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(200,215,255,0.4); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; z-index: 3; }
+</style>
+</head>
+<body>
+
+  <div class="stars"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="nebula"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>
+
+  <div class="panel">
+    <div class="p-title">深空控制台</div>
+    <div class="grid">
+      <div class="row"><span class="k">轨道</span><span class="v">近地 LEO · 412 km</span></div>
+      <div class="row"><span class="k">航速</span><span class="v">7.66 km/s</span></div>
+      <div class="row"><span class="k">太阳辐照</span><span class="v">1.36 kW/m²</span></div>
+      <div class="row"><span class="k">温度</span><span class="v">-2.7 ℃</span></div>
+    </div>
+    <div class="btns">
+      <button class="btn">点火</button>
+      <button class="btn">对接</button>
+      <button class="btn">返航</button>
+    </div>
+  </div>
+
+  <div class="meta">颠覆UI ⑧ · 星云宇宙界面</div>
+
+</body>
+</html>

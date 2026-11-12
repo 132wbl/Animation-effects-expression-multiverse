@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI组件 I — 进度条进阶 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0e14;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+  }
+  .stage { max-width: 940px; text-align: center; }
+  .title { font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .card {
+    width: 290px; min-height: 170px; border-radius: 14px;
+    background: #141a22; border: 1px solid #222b36;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    padding: 20px;
+  }
+  .card .label { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+
+  /* 1 流光进度条 */
+  .bar-shine { width: 220px; height: 12px; border-radius: 8px; background: #222b36; overflow: hidden; position: relative; }
+  .bar-shine i { position:absolute; inset:0; border-radius:8px;
+    background: linear-gradient(90deg,#22d3ee,#a78bfa); animation: fillShine 2.4s ease-in-out infinite; }
+  .bar-shine i::after { content:''; position:absolute; inset:0;
+    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    background-size: 60% 100%; background-repeat: no-repeat; animation: shineSweep 0.9s linear infinite; }
+  @keyframes fillShine { 0%{width:0%} 60%{width:100%} 100%{width:100%} }
+  @keyframes shineSweep { 0%{background-position:-60% 0} 100%{background-position:160% 0} }
+
+  /* 2 粒子进度条 */
+  .bar-particle { width: 220px; height: 14px; border-radius: 8px; background: #222b36; position: relative; overflow: hidden; }
+  .bar-particle i { position:absolute; top:0; bottom:0; left:0; border-radius:8px;
+    background: linear-gradient(90deg,#f59e0b,#f97316); animation: fillPart 2.4s ease-in-out infinite; }
+  .bar-particle b { position:absolute; top:0; left:0; width:10px; height:10px; border-radius:50%;
+    background:#f0abfc; box-shadow:0 0 8px #f0abfc; margin:2px; animation: partRun 2.4s ease-in-out infinite; }
+  @keyframes fillPart { 0%{width:0%} 60%{width:100%} 100%{width:100%} }
+  @keyframes partRun { 0%{left:2px} 60%{left:calc(100% - 14px)} 100%{left:calc(100% - 14px)} }
+
+  /* 3 多彩分段进度条 */
+  .bar-seg { width: 220px; display:flex; gap:4px; height:14px; }
+  .bar-seg span { flex:1; border-radius:4px; background:#222b36; animation: segFill 2.4s ease-in-out infinite; }
+  .bar-seg span:nth-child(1){ animation-delay:0s; }
+  .bar-seg span:nth-child(2){ animation-delay:0.3s; }
+  .bar-seg span:nth-child(3){ animation-delay:0.6s; }
+  .bar-seg span:nth-child(4){ animation-delay:0.9s; }
+  .bar-seg span:nth-child(5){ animation-delay:1.2s; }
+  .bar-seg span:nth-child(6){ animation-delay:1.5s; }
+  @keyframes segFill { 0%{background:#222b36; transform:scaleY(0.6)} 50%{background:#22d3ee; transform:scaleY(1)} 100%{background:#222b36; transform:scaleY(0.6)} }
+
+  /* 4 仪表指针进度 */
+  .speedo { position: relative; width: 170px; height: 110px; }
+  .speedo .arc { position:absolute; inset:0; }
+  .speedo .needle { position:absolute; left:50%; bottom:6px; width:4px; height:72px; transform-origin:50% 100%;
+    background: linear-gradient(180deg,#f43f5e,#f0abfc); border-radius:2px; animation: needle 2.6s cubic-bezier(0.5,0,0.2,1) infinite; }
+  .speedo .needle::after { content:''; position:absolute; top:-6px; left:50%; transform:translateX(-50%);
+    width:10px; height:10px; border-radius:50%; background:#fff; box-shadow:0 0 8px #f43f5e; }
+  @keyframes needle { 0%{transform:rotate(-90deg)} 55%{transform:rotate(45deg)} 100%{transform:rotate(-90deg)} }
+  .speedo b { position:absolute; bottom:16px; left:0; right:0; text-align:center; font-size:20px; color:#f0abfc; }
+
+  /* 5 水波填充进度 */
+  .bar-wave { width: 220px; height: 16px; border-radius: 8px; background: #0c1018; overflow: hidden; position: relative; border:1px solid #222b36; }
+  .bar-wave .water { position:absolute; inset:0; }
+  .bar-wave .water i { position:absolute; left:0; right:0; bottom:0; height:200%; border-radius:45%;
+    background: rgba(34,211,238,0.8); animation: waveUp 3s ease-in-out infinite; }
+  .bar-wave .water i:nth-child(2){ animation-delay:1.5s; opacity:0.5; }
+  @keyframes waveUp { 0%{transform:translateY(55%)} 60%{transform:translateY(0)} 100%{transform:translateY(55%)} }
+  .bar-wave .water i::before { content:''; position:absolute; inset:0; border-radius:50%;
+    background: rgba(255,255,255,0.15); }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="title">UI组件 I · 进度条进阶</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="bar-shine"><i></i></div>
+        <div class="label">流光</div>
+      </div>
+
+      <div class="card">
+        <div class="bar-particle"><i></i><b></b></div>
+        <div class="label">粒子</div>
+      </div>
+
+      <div class="card">
+        <div class="bar-seg"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="label">多彩分段</div>
+      </div>
+
+      <div class="card">
+        <div class="speedo"><div class="needle"></div><b>75</b></div>
+        <div class="label">仪表指针</div>
+      </div>
+
+      <div class="card">
+        <div class="bar-wave"><div class="water"><i></i><i></i></div></div>
+        <div class="label">水波填充</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta">UI组件 I · 进度条进阶</div>
+
+</body>
+</html>

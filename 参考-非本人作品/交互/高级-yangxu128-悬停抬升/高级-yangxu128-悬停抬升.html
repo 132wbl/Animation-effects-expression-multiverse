@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悬停抬升 Hover Lift — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.lift{width:180px;height:120px;background:#fff;color:#1e293b;border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;transition:transform var(--duration,0.3s) ease,box-shadow var(--duration,0.3s) ease}.lift:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.35)}
+</style>
+</head>
+<body>
+  <div class="lift">Hover</div>
+
+</body>
+</html>

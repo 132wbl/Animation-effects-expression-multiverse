@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上滑淡入 Fade In Up — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .fade-in-up{animation:fadeInUp var(--duration,0.8s) ease-out both}@keyframes fadeInUp{from{opacity:0;transform:translateY(var(--distance,20px))}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:0.8s; --distance:20px" -->
+  <div class="fade-in-up">Hello</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ① — 3D大理石浮雕 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0e0d0c;
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 大理石纹理 */
+  .marble-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(circle at 20% 30%, #3a3732, transparent 55%),
+      radial-gradient(circle at 80% 70%, #2e2b27, transparent 50%),
+      linear-gradient(160deg, #1c1a18, #0f0e0d);
+  }
+  .marble-bg::before { content:''; position: absolute; inset: 0; opacity: 0.15;
+    background:
+      repeating-linear-gradient(115deg, transparent 0 32px, rgba(255,255,255,0.5) 32px 33px),
+      repeating-linear-gradient(-60deg, transparent 0 48px, rgba(255,255,255,0.3) 48px 49px); }
+
+  /* 大理石浮雕字 */
+  .stone {
+    position: relative; z-index: 1; display: inline-block;
+    font-size: 200px; font-weight: 400; letter-spacing: 0; padding: 10px 8px;
+    /* 大理石纹：乳白底 + 细石脉 */
+    background:
+      radial-gradient(2px 2px at 25% 35%, rgba(120,110,95,0.5), transparent),
+      radial-gradient(1.5px 1.5px at 55% 20%, rgba(140,125,100,0.45), transparent),
+      radial-gradient(2px 2px at 75% 60%, rgba(110,100,85,0.4), transparent),
+      radial-gradient(1.5px 1.5px at 40% 80%, rgba(130,115,95,0.4), transparent),
+      radial-gradient(1px 1px at 65% 40%, rgba(150,135,110,0.35), transparent),
+      linear-gradient(160deg, #f5f0e8 0%, #eae3d6 35%, #ddd5c6 70%, #d0c8b8 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* 立体浮雕厚度 + 底部刻入投影 */
+    text-shadow:
+      0 1px 0 #faf6ef,
+      0 2px 0 #e8e1d2,
+      0 3px 0 #dcd4c4,
+      0 4px 0 #cfc7b6,
+      0 6px 2px rgba(0,0,0,0.35),
+      0 10px 8px rgba(0,0,0,0.4),
+      0 16px 20px rgba(0,0,0,0.45);
+  }
+
+  /* 底部地面阴影 */
+  .ground { position: fixed; left: 0; right: 0; bottom: 0; height: 40%; z-index: 0;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.45)); pointer-events: none; }
+
+  .sub { position: relative; z-index: 1; margin-top: 16px; font-size: 15px; letter-spacing: 7px;
+    color: rgba(220,215,205,0.55); font-family: "KaiTi", serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(220,215,205,0.4); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; z-index: 2; font-family: "Segoe UI", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="marble-bg"></div>
+  <div class="ground"></div>
+
+  <div class="stage">
+    <span class="stone">石</span>
+    <div class="sub">镌刻于石 · 立体浮雕</div>
+  </div>
+
+  <div class="meta">颠覆文字 ① · 3D大理石浮雕</div>
+
+</body>
+</html>

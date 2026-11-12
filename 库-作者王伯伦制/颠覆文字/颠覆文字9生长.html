@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑨ — 生长 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 45%, #0c1a12, #050a07 82%);
+    font-family: system-ui, sans-serif; overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  svg { display: block; margin: 0 auto; }
+  /* 每条笔画：从起点生长到终点 */
+  .stroke {
+    fill: none;
+    stroke: #9fe8b0;
+    stroke-width: 3.5;
+    stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: grow 3s cubic-bezier(0.6,0,0.35,1) infinite;
+    filter: drop-shadow(0 0 8px rgba(120,230,160,0.6));
+  }
+  /* 各笔错开生长（模拟逐笔书写） */
+  .stroke:nth-child(1){ animation-delay: 0s; }
+  .stroke:nth-child(2){ animation-delay: 0.5s; }
+  .stroke:nth-child(3){ animation-delay: 1s; }
+  .stroke:nth-child(4){ animation-delay: 1.5s; }
+  @keyframes grow {
+    0% { stroke-dashoffset: 600; opacity: 0.3; }
+    60% { stroke-dashoffset: 0; opacity: 1; }
+    85% { stroke-dashoffset: 0; opacity: 1; }
+    100% { stroke-dashoffset: -600; opacity: 0.2; }
+  }
+
+  .sub { margin-top: 30px; font-size: 14px; letter-spacing: 5px; color: rgba(150,215,175,0.5); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(160,220,185,0.4); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <svg width="260" height="200" viewBox="0 0 260 200" id="svg">
+      <!-- "木"字：按笔顺的描边路径 -->
+      <path class="stroke" d="M 50 170 L 130 170" />
+      <path class="stroke" d="M 90 170 L 90 30" />
+      <path class="stroke" d="M 90 90 L 150 50" />
+      <path class="stroke" d="M 90 90 L 170 160" />
+    </svg>
+    <div class="sub">一笔一笔 · 长成"木"</div>
+  </div>
+
+  <div class="meta">颠覆文字 ⑨ · 生长</div>
+
+<script>
+  // 预留：可换成别的字（需手写该字的描边路径，按笔顺）
+</script>
+</body>
+</html>

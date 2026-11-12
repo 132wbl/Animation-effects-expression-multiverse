@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>流场粒子 Flow Field — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.flow{width:100%;height:100%}
+</style>
+</head>
+<body>
+  <canvas class="flow"></canvas>
+<script>const c=document.querySelector('.flow');const ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const ps=[];for(let i=0;i<800;i++)ps.push({x:Math.random()*c.width,y:Math.random()*c.height});let t=0;function noise(x,y){return Math.sin(x*0.006+t)*Math.cos(y*0.006+t*0.7);}(function tick(){ctx.fillStyle='rgba(15,16,35,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='hsl(280 90% 70%)';ps.forEach(p=>{const a=noise(p.x,p.y)*6.28;p.x+=Math.cos(a)*1.5;p.y+=Math.sin(a)*1.5;if(p.x<0||p.x>c.width||p.y<0||p.y>c.height){p.x=Math.random()*c.width;p.y=Math.random()*c.height;}ctx.fillRect(p.x,p.y,1.5,1.5);});t+=0.006;requestAnimationFrame(tick);})();</script>
+</body>
+</html>

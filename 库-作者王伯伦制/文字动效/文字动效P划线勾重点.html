@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 P — 划线勾重点 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #f6f5f2;   /* 干净米白 */
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden; color: #2b2a27;
+  }
+  .stage { max-width: 620px; text-align: center; }
+
+  .line { font-size: 40px; line-height: 1.7; letter-spacing: 1px; }
+
+  /* 关键词容器：下方有描线 */
+  .kw { position: relative; display: inline-block; font-weight: 700; color: #222; padding: 0 2px 4px; }
+  /* 描线：从左到右画出 */
+  .kw::after {
+    content: ''; position: absolute; left: 0; bottom: -3px; width: 100%; height: 5px;
+    background: linear-gradient(90deg, #e8a13a, #f2c879);
+    border-radius: 3px;
+    transform: scaleX(0); transform-origin: left center;
+    animation: underline 3.4s cubic-bezier(0.5,0,0.25,1) infinite;
+    box-shadow: 0 0 12px rgba(232,161,58,0.35);
+  }
+  /* 高亮扫光：划过关键词 */
+  .kw::before {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(100deg, transparent 0%, rgba(242,200,121,0.35) 50%, transparent 100%);
+    background-size: 240% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    animation: sweep 3.4s ease-in-out infinite;
+  }
+  @keyframes underline {
+    0% { transform: scaleX(0); }
+    14% { transform: scaleX(0); }
+    40% { transform: scaleX(1); }         /* 画完 */
+    80% { transform: scaleX(1); }         /* 停留 */
+    100% { transform: scaleX(0); }        /* 淡去 */
+  }
+  @keyframes sweep {
+    0%,100% { background-position: -120% 0; opacity: 0; }
+    12% { opacity: 1; }
+    45% { background-position: 120% 0; opacity: 1; }
+    55% { opacity: 0; }
+  }
+
+  .sub { margin-top: 34px; font-size: 15px; letter-spacing: 7px; color: #9a958a; font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: #b0aa9c; background: rgba(255,255,255,0.6);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="line">
+      这一句里，<span class="kw">重点</span>被轻轻划出。
+    </div>
+    <div class="sub">划线 · 勾重点</div>
+  </div>
+
+  <div class="meta">文字动效 P · 划线勾重点</div>
+
+<script>
+  // 预留：可改关键词（给要强调的词包上 <span class="kw">…</span>）
+</script>
+</body>
+</html>

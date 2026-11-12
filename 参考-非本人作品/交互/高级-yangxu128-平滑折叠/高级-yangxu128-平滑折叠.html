@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>平滑折叠 Accordion Smooth — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.acc{width:280px;background:#1e293b;border-radius:12px;overflow:hidden}.acc .hd{padding:16px;font-weight:900;cursor:pointer;background:#334155}.acc .bd{padding:0 16px;max-height:0;overflow:hidden;transition:max-height var(--duration,0.4s) ease}
+</style>
+</head>
+<body>
+  <div class="acc"><div class="hd">点击展开</div><div class="bd"><p style="padding:16px 0">这里是展开的内容区域，高度平滑过渡。</p></div></div>
+<script>const hd=document.querySelector('.acc .hd');const bd=document.querySelector('.acc .bd');hd.addEventListener('click',()=>{bd.style.maxHeight=bd.scrollHeight+'px';setTimeout(()=>bd.style.maxHeight='',400);});</script>
+</body>
+</html>

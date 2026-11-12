@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打字光标 Typing Cursor — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.typing{font-size:36px;font-weight:900}.typing::after{content:'|';color:#22d3ee;animation:blink .8s step-end infinite}@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+  <div class="typing"></div>
+<script>const el=document.querySelector('.typing');const words=['Motion','动效','CSS','Canvas'];let wi=0,ci=0,del=false;(function loop(){const w=words[wi];el.textContent=w.slice(0,ci);let sp=del?60:160;if(!del&&ci===w.length){del=true;sp=900;}else if(del&&ci===0){del=false;wi=(wi+1)%words.length;sp=300;}ci+=del?-1:1;setTimeout(loop,sp);})();</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆UI ④ — 打字机故障风 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #050505; overflow: hidden;
+  }
+  .terminal {
+    width: 560px; min-height: 200px;
+    background: #0a0a0a; border: 1px solid #1f1f1f; border-radius: 10px;
+    padding: 22px; box-shadow: 0 0 40px rgba(0,255,120,0.05);
+    font-family: "Consolas", "Courier New", monospace; color: #37ff8b;
+    position: relative;
+  }
+  .t-head { font-size: 12px; color: #666; letter-spacing: 1px; border-bottom: 1px solid #1f1f1f; padding-bottom: 10px; margin-bottom: 16px; }
+  .t-body { font-size: 22px; line-height: 1.7; min-height: 40px; }
+
+  /* 光标 */
+  .cursor { display: inline-block; width: 10px; height: 24px; background: #37ff8b; vertical-align: text-bottom;
+    margin-left: 2px; animation: cur 0.8s steps(2) infinite; }
+  @keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* glitch 状态：文字撕裂错位 */
+  .glitching .t-body { animation: glitchShift 0.2s steps(2) infinite; }
+  @keyframes glitchShift {
+    0%{ transform: translate(0,0); }
+    25%{ transform: translate(-3px,1px); }
+    50%{ transform: translate(3px,-1px); }
+    75%{ transform: translate(-2px,0); }
+    100%{ transform: translate(2px,1px); }
+  }
+  /* 残影 */
+  .glitching .t-body { text-shadow: 2px 0 #ff004c, -2px 0 #00c8ff; }
+  /* 色偏撕裂条 */
+  .t-body::after { content:''; position:absolute; left:0; right:0; height:3px; opacity:0;
+    background: rgba(255,0,76,0.4); mix-blend-mode: screen; pointer-events:none; }
+  .glitching .t-body::after { opacity: 0.8; animation: tear 0.18s steps(3) infinite; }
+  @keyframes tear {
+    0%{ top: 20%; transform: translateX(-6px); }
+    33%{ top: 60%; transform: translateX(5px); }
+    66%{ top: 40%; transform: translateX(-4px); }
+    100%{ top: 25%; transform: translateX(7px); }
+  }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.5);
+    padding: 5px 16px; border-radius: 20px; font-family: "Segoe UI", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="terminal" id="term">
+    <div class="t-head">C:\ROOT\SYSTEM&gt;_</div>
+    <div class="t-body" id="out"></div>
+  </div>
+
+  <div class="meta">颠覆UI ④ · 打字机故障风</div>
+
+<script>
+  const out = document.getElementById('out');
+  const term = document.getElementById('term');
+  const LINES = [
+    '> 正在初始化系统……',
+    '> 加载核心模块 OK',
+    '> 连接数据流 12847 节点',
+    '> 校验完整性 ✓',
+    '> 警告：检测到未知信号',
+    '> 进入全息终端界面',
+    '> 就绪。等待指令……'
+  ];
+  let li = 0;
+
+  function glitchBurst(){
+    term.classList.add('glitching');
+    // 卡顿一下再恢复
+    setTimeout(()=> term.classList.remove('glitching'), 90 + Math.random()*120);
+  }
+
+  function typeLine(text, done){
+    let i = 0;
+    out.textContent = '';
+    function addChar(){
+      out.textContent = text.slice(0, ++i);
+      // 随机 glitch
+      if (Math.random() < 0.07) glitchBurst();
+      if (i < text.length) {
+        // 偶尔卡一下（停顿）
+        const pause = Math.random() < 0.05 ? 180 : (30 + Math.random()*60);
+        setTimeout(addChar, pause);
+      } else {
+        // 整行打完后短暂停留
+        setTimeout(done, 900);
+      }
+    }
+    addChar();
+  }
+
+  function loop(){
+    typeLine(LINES[li], () => {
+      li = (li + 1) % LINES.length;
+      // 偶尔整屏卡顿
+      if (Math.random() < 0.25) glitchBurst();
+      setTimeout(loop, 400);
+    });
+  }
+  setTimeout(loop, 500);
+</script>
+</body>
+</html>

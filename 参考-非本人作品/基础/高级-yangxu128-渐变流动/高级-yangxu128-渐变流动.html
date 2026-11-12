@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>渐变流动 Gradient Shift — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .gradient-shift{background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff);background-size:300% 100%;animation:gradShift var(--duration,6s) linear infinite;color:#fff;font-weight:900;padding:20px 44px;border-radius:12px;font-size:28px}@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:6s" -->
+  <div class="gradient-shift">Flow</div>
+</body>
+</html>

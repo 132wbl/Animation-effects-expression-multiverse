@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>左侧滑入 Slide In Left — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .slide-left{animation:slideLeft var(--duration,0.6s) ease-out both}@keyframes slideLeft{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:0.6s" -->
+  <div class="slide-left">&rarr;</div>
+</body>
+</html>

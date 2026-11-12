@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑦ — 活字 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 45%, #0e1512, #050806 82%);
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 活字容器：由许多"生物"点组成 */
+  .live { position: relative; display: inline-block; font-size: 0; line-height: 0; user-select: none; }
+  .live .creature {
+    display: inline-block; width: 9px; height: 9px; margin: 2px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #c9ffd8, #2fa963 70%);
+    animation: squirm var(--d, 2.4s) ease-in-out infinite;
+    animation-delay: var(--del, 0s);
+  }
+  /* 每个生物蠕动：聚散、缩放、呼吸 */
+  @keyframes squirm {
+    0%,100% { transform: translate(0,0) scale(1); }
+    25% { transform: translate(2px, -3px) scale(1.3); }
+    50% { transform: translate(-2px, 2px) scale(0.85); }
+    75% { transform: translate(3px, 1px) scale(1.15); }
+  }
+
+  .sub { margin-top: 28px; font-size: 14px; letter-spacing: 5px; color: rgba(160,215,180,0.5); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(170,220,190,0.4); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="live" id="live"></div>
+    <div class="sub">一群小生物 · 聚成字</div>
+  </div>
+
+  <div class="meta">颠覆文字 ⑦ · 活字</div>
+
+<script>
+  const liveEl = document.getElementById('live');
+  const TEXT = '生';
+  const STEP = 14;
+
+  // 采样字形 -> 放生物
+  const off = document.createElement('canvas');
+  off.width = 260; off.height = 260;
+  const octx = off.getContext('2d');
+  octx.fillStyle = '#fff';
+  octx.font = `900 200px "Microsoft YaHei", "SimHei", sans-serif`;
+  octx.textAlign = 'center'; octx.textBaseline = 'middle';
+  octx.fillText(TEXT, off.width/2, off.height/2);
+  const img = octx.getImageData(0,0,off.width,off.height).data;
+
+  let n = 0;
+  for (let y=0; y<off.height; y+=STEP) for (let x=0; x<off.width; x+=STEP){
+    if (img[(y*off.width+x)*4+3] > 110){
+      const c = document.createElement('span');
+      c.className = 'creature';
+      c.style.left = (x*1.2) + 'px';
+      c.style.top = (y*1.2) + 'px';
+      // 错开每个生物的蠕动相位
+      c.style.setProperty('--d', (2 + Math.random()*1.4) + 's');
+      c.style.setProperty('--del', (Math.random()*2) + 's');
+      c.style.position = 'absolute';
+      liveEl.appendChild(c);
+      n++;
+    }
+  }
+  liveEl.style.width = (off.width*1.2) + 'px';
+  liveEl.style.height = (off.height*1.2) + 'px';
+  console.log('creatures:', n);
+</script>
+</body>
+</html>

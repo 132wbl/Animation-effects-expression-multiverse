@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 G — 描色填充 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #f5f4f0;   /* 浅米白底，干净 */
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 描色填充文字 */
+  .fill {
+    position: relative; display: inline-block;
+    font-size: 110px; font-weight: 400; letter-spacing: 8px;
+    color: #c8c4b8;                /* 文字本身浅灰（未填部分） */
+    -webkit-text-stroke: 2px #8a857a;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    padding-bottom: 8px;
+  }
+  /* 填充层：从下往上被深色盖住 */
+  .fill .ink {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    overflow: hidden;
+  }
+  .fill .ink span {
+    display: block; height: 100%;
+    background: linear-gradient(0deg, #2f2a22 0%, #4a4233 100%);
+    background-clip: text; -webkit-background-clip: text;
+    color: transparent; -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 2px #2f2a22;
+    transform: translateY(102%);
+    animation: fillUp 3.6s cubic-bezier(0.6,0,0.3,1) infinite;
+  }
+  @keyframes fillUp {
+    0% { transform: translateY(102%); }
+    55% { transform: translateY(0); }        /* 填满 */
+    85% { transform: translateY(0); }        /* 停留 */
+    100% { transform: translateY(102%); }    /* 清空 */
+  }
+
+  .sub { margin-top: 26px; font-size: 15px; letter-spacing: 5px; color: #9a9588; font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: #b0aa9c; background: rgba(255,255,255,0.6);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <span class="fill">完成
+      <span class="ink"><span>完成</span></span>
+    </span>
+    <div class="sub">从下往上 · 填满</div>
+  </div>
+
+  <div class="meta">文字动效 G · 描色填充</div>
+
+<script>
+  // 预留：可改文字（需同步改两处 .fill 和 .ink span 里的字）
+  const fillEl = document.querySelector('.fill');
+</script>
+</body>
+</html>

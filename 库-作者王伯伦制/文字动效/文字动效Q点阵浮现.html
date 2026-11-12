@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 Q — 点阵浮现 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0d1220;   /* 深底，衬托点阵 */
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 点阵文字容器 */
+  .dots { position: relative; font-size: 0; letter-spacing: 0; user-select: none; }
+  .dots .row { display: block; white-space: nowrap; }
+  .dots .cell {
+    display: inline-block; width: 10px; height: 10px; margin: 1px;
+    background: #3a4160;   /* 未点亮：暗点 */
+    border-radius: 2px;
+    opacity: 0.15;
+  }
+  .dots .cell.on {
+    background: #9be7ff;   /* 点亮：亮青 */
+    box-shadow: 0 0 8px rgba(120,210,255,0.7);
+    opacity: 1;
+    animation: popIn 0.35s ease-out;
+  }
+  @keyframes popIn { from { transform: scale(0.4); } to { transform: scale(1); } }
+
+  .sub { margin-top: 26px; font-size: 14px; letter-spacing: 5px; color: rgba(200,215,240,0.55); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.35);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="dots" id="dots"></div>
+    <div class="sub">点阵 · 逐点浮现</div>
+  </div>
+
+  <div class="meta">文字动效 Q · 点阵浮现</div>
+
+<script>
+  const dotsEl = document.getElementById('dots');
+  const TEXT = '点睛';
+  const CELL = 10, MARGIN = 2, SCALE = 4;   // 点放大倍数
+
+  // 离屏采样文字像素
+  const off = document.createElement('canvas');
+  off.width = 200; off.height = 100;
+  const octx = off.getContext('2d');
+  octx.fillStyle = '#fff';
+  octx.font = `900 72px "KaiTi", "Microsoft YaHei", sans-serif`;
+  octx.textAlign = 'center'; octx.textBaseline = 'middle';
+  octx.fillText(TEXT, off.width/2, off.height/2);
+  const img = octx.getImageData(0,0,off.width,off.height).data;
+
+  // 生成点阵
+  const points = [];
+  for (let y = 0; y < off.height; y += CELL+MARGIN){
+    for (let x = 0; x < off.width; x += CELL+MARGIN){
+      const i = (y*off.width + x) * 4;
+      if (img[i+3] > 110) points.push([x, y]);
+    }
+  }
+
+  // 渲染点阵（未点亮）
+  points.forEach(([x,y]) => {
+    const c = document.createElement('span');
+    c.className = 'cell';
+    c.style.position = 'absolute';
+    c.style.left = (x * SCALE) + 'px';
+    c.style.top = (y * SCALE) + 'px';
+    c.style.width = (CELL*SCALE) + 'px';
+    c.style.height = (CELL*SCALE) + 'px';
+    c.style.margin = '0';
+    dotsEl.appendChild(c);
+  });
+  dotsEl.style.width = (off.width*SCALE) + 'px';
+  dotsEl.style.height = (off.height*SCALE) + 'px';
+
+  // 循环点亮：从左到右逐列浮现
+  const cells = [...dotsEl.children];
+  const COLS = Math.ceil(off.width / (CELL+MARGIN));
+  let col = 0;
+  function lightNext(){
+    // 点亮当前列的所有点
+    cells.forEach((c, idx) => {
+      const cx = idx % COLS;
+      if (cx === col) c.classList.add('on');
+    });
+    col++;
+    if (col >= COLS) {
+      col = 0;
+      // 短暂停留后清空重来
+      setTimeout(() => {
+        cells.forEach(c => c.classList.remove('on'));
+        setTimeout(lightNext, 400);
+      }, 2200);
+    } else {
+      setTimeout(lightNext, 34);
+    }
+  }
+  lightNext();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悬停按压 Hover Press — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.press{width:200px;height:60px;background:#6366f1;color:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer;box-shadow:0 6px 0 #4338ca;transition:transform var(--duration,0.1s),box-shadow var(--duration,0.1s)}.press:hover{transform:translateY(3px);box-shadow:0 3px 0 #4338ca}.press:active{transform:translateY(6px);box-shadow:0 0 0 #4338ca}
+</style>
+</head>
+<body>
+  <div class="press">按我</div>
+
+</body>
+</html>

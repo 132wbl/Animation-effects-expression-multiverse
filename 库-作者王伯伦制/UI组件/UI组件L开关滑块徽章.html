@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI组件 L — 开关/滑块/徽章 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0e14;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+  }
+  .stage { max-width: 940px; text-align: center; }
+  .title { font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .card {
+    width: 270px; min-height: 180px; border-radius: 14px;
+    background: #141a22; border: 1px solid #222b36;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    padding: 20px;
+  }
+  .card .label { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+  .card .note { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: -8px; }
+
+  /* 1 霓虹开关（可点击） */
+  .switch { position: relative; width: 64px; height: 34px; cursor: pointer; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .track { position: absolute; inset: 0; border-radius: 20px; background: #222b36; transition: 0.3s; }
+  .switch .thumb { position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%;
+    background: #64748b; transition: 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+  .switch input:checked + .track { background: #22d3ee; box-shadow: 0 0 18px rgba(34,211,238,0.6); }
+  .switch input:checked + .track + .thumb { left: 33px; background: #fff; box-shadow: 0 0 12px #22d3ee; }
+
+  /* 2 流光滑块（range） */
+  .slider { width: 180px; -webkit-appearance: none; appearance: none; height: 8px; border-radius: 6px;
+    background: linear-gradient(90deg,#22d3ee,#a78bfa,#f0abfc); outline: none; }
+  .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; box-shadow: 0 0 12px rgba(34,211,238,0.8); cursor: pointer; border: 2px solid #22d3ee; }
+
+  /* 3 进度徽章（圆形进度环） */
+  .badge { position: relative; width: 78px; height: 78px; }
+  .badge svg { transform: rotate(-90deg); }
+  .badge circle { fill: none; stroke-width: 7; }
+  .badge .bt { stroke: #222b36; }
+  .badge .bf { stroke: url(#bgrad); stroke-linecap: round; stroke-dasharray: 226; stroke-dashoffset: 226; animation: badgeGrow 3s ease-in-out infinite; }
+  @keyframes badgeGrow { 0%{stroke-dashoffset:226} 45%{stroke-dashoffset:40} 100%{stroke-dashoffset:226} }
+  .badge b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #22d3ee; }
+
+  /* 4 状态指示灯（呼吸） */
+  .dot-lamp { display: flex; gap: 16px; align-items: center; }
+  .lamp { width: 18px; height: 18px; border-radius: 50%; animation: breathe 2s ease-in-out infinite; }
+  .lamp.green { background:#34d399; box-shadow: 0 0 14px #34d399; }
+  .lamp.yellow { background:#fbbf24; box-shadow: 0 0 14px #fbbf24; animation-delay: 0.5s; }
+  .lamp.red { background:#fb7185; box-shadow: 0 0 14px #fb7185; animation-delay: 1s; }
+  @keyframes breathe { 0%,100%{ opacity:0.3; transform:scale(0.8); } 50%{ opacity:1; transform:scale(1.1); } }
+
+  /* 5 音量滑块（分段 + 波动条） */
+  .vol { display: flex; align-items: center; gap: 10px; }
+  .vol .segs { display: flex; gap: 4px; }
+  .vol .segs i { width: 6px; height: 6px; border-radius: 2px; background: #334155; transition: 0.2s; }
+  .vol input { width: 110px; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 4px; background: #334155; outline: none; }
+  .vol input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #f0abfc; box-shadow: 0 0 10px #f0abfc; cursor: pointer; }
+
+  /* 6 通知徽章（数字气泡） */
+  .bell { position: relative; width: 44px; height: 44px; border-radius: 12px; background: #1e293b;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .bell .count { position: absolute; top: -8px; right: -8px; min-width: 20px; height: 20px; border-radius: 10px;
+    background: #f43f5e; color:#fff; font-size: 12px; font-weight: 700; display:flex; align-items:center; justify-content:center;
+    padding: 0 4px; box-shadow: 0 0 10px rgba(244,63,94,0.7); animation: ping 2s infinite; }
+  @keyframes ping { 0%{ transform:scale(1); } 10%{ transform:scale(1.25); } 20%{ transform:scale(1); } 100%{ transform:scale(1); } }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="title">UI组件 L · 开关/滑块/徽章</div>
+
+    <div class="grid">
+      <div class="card">
+        <label class="switch"><input type="checkbox"><span class="track"></span><span class="thumb"></span></label>
+        <div class="label">霓虹开关</div><div class="note">点击切换</div>
+      </div>
+
+      <div class="card">
+        <input type="range" class="slider" min="0" max="100" value="70">
+        <div class="label">流光滑块</div><div class="note">拖动</div>
+      </div>
+
+      <div class="card">
+        <div class="badge"><svg width="78" height="78"><defs><linearGradient id="bgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient></defs><circle class="bt" cx="39" cy="39" r="36"/><circle class="bf" cx="39" cy="39" r="36"/></svg><b>82</b></div>
+        <div class="label">进度徽章</div>
+      </div>
+
+      <div class="card">
+        <div class="dot-lamp"><span class="lamp green"></span><span class="lamp yellow"></span><span class="lamp red"></span></div>
+        <div class="label">状态灯</div><div class="note">呼吸闪烁</div>
+      </div>
+
+      <div class="card">
+        <div class="vol"><input type="range" min="0" max="10" value="7"><div class="segs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="label">音量滑块</div>
+      </div>
+
+      <div class="card">
+        <div class="bell">🔔<span class="count">9</span></div>
+        <div class="label">通知徽章</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta">UI组件 L · 开关/滑块/徽章</div>
+
+<script>
+  // 音量滑块联动分段条
+  document.querySelectorAll('.vol input').forEach(inp => {
+    const segs = inp.nextElementSibling.querySelectorAll('i');
+    function update(){ const v = inp.value; segs.forEach((s,i)=> s.style.background = i < v ? '#f0abfc' : '#334155'); }
+    inp.addEventListener('input', update); update();
+  });
+</script>
+</body>
+</html>

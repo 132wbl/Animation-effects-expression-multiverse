@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑥ — 笔画粒子炸开 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0d12;
+    overflow: hidden;
+  }
+  canvas { display: block; }
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,180,90,0.5); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; z-index: 2; font-family: "Segoe UI", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <canvas id="cv"></canvas>
+
+  <div class="meta">颠覆文字 ⑥ · 笔画粒子炸开</div>
+
+<script>
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+
+  const TEXT = '炸';
+  const FONT = 170;
+  const GAP = 4;
+  let parts = [];
+
+  function sample(){
+    const off = document.createElement('canvas');
+    off.width = FONT * 1.6; off.height = FONT * 1.6;
+    const o = off.getContext('2d');
+    o.font = '900 ' + FONT + 'px KaiTi, STKaiti, SimSun, serif';
+    o.textBaseline = 'middle'; o.textAlign = 'center';
+    o.fillStyle = '#fff';
+    o.fillText(TEXT, off.width/2, off.height/2);
+    const img = o.getImageData(0, 0, off.width, off.height).data;
+    const cx = (W - off.width)/2, cy = (H - off.height)/2;
+    for (let y=0; y<off.height; y+=GAP){
+      for (let x=0; x<off.width; x+=GAP){
+        if (img[(y*off.width + x)*4 + 3] > 120){
+          // 为每个粒子随机一个"炸开"落点方向
+          const a = Math.random()*Math.PI*2, d = 60 + Math.random()*180;
+          parts.push({
+            tx: cx+x, ty: cy+y,
+            sx: cx+x + Math.cos(a)*d, sy: cy+y + Math.sin(a)*d,
+            x: cx+x, y: cy+y, a: 1,
+            r: Math.random()*1.5 + 0.6,
+            hue: 28 + Math.random()*20
+          });
+        }
+      }
+    }
+  }
+
+  let phase = 'gather', t = 0, hold = 0;
+
+  function frame(){
+    ctx.fillStyle = 'rgba(10,13,18,0.28)';
+    ctx.fillRect(0,0,W,H);
+
+    t++;
+    if (phase === 'gather'){ if (t>110){ phase='burst'; t=0; } }
+    else { if (t>90){ phase='gather'; t=0; } }
+    const burst = phase === 'burst';
+
+    parts.forEach(p => {
+      if (burst){
+        p.x += (p.sx - p.x)*0.06;
+        p.y += (p.sy - p.y)*0.06 + 0.4;
+        p.a -= 0.015; if (p.a<0.15) p.a = 0.15;
+      } else {
+        p.x += (p.tx - p.x)*0.05;
+        p.y += (p.ty - p.y)*0.05;
+        if (p.a < 1) p.a += 0.03;
+      }
+      ctx.globalAlpha = Math.max(p.a,0);
+      ctx.fillStyle = 'hsl(' + p.hue + ',90%,62%)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+
+  sample();
+  frame();
+</script>
+</body>
+</html>

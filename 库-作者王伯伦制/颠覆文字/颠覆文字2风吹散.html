@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ② — 被风吹散 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #101820, #05080d 85%);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden;
+  }
+  canvas { display: block; }
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(140,200,255,0.5); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; z-index: 2; }
+</style>
+</head>
+<body>
+
+  <canvas id="cv"></canvas>
+
+  <div class="meta">颠覆文字 ② · 被风吹散</div>
+
+<script>
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+
+  const TEXT = '流';
+  const FONT_SIZE = 180;               // 字号
+  const GAP = 5;                       // 采样间距
+  let particles = [];
+
+  // 用离屏画布采样字的笔画点
+  function sampleText(){
+    const off = document.createElement('canvas');
+    off.width = FONT_SIZE * 1.6; off.height = FONT_SIZE * 1.6;
+    const o = off.getContext('2d');
+    o.font = '900 ' + FONT_SIZE + 'px KaiTi, STKaiti, SimSun, serif';
+    o.textBaseline = 'middle'; o.textAlign = 'center';
+    o.fillStyle = '#fff';
+    o.fillText(TEXT, off.width/2, off.height/2);
+
+    // 采样
+    const img = o.getImageData(0, 0, off.width, off.height).data;
+    const cx = (W - off.width)/2, cy = (H - off.height)/2;
+    for (let y=0; y<off.height; y+=GAP){
+      for (let x=0; x<off.width; x+=GAP){
+        const idx = (y*off.width + x)*4;
+        if (img[idx+3] > 120){
+          particles.push({
+            tx: cx + x,            // 目标位置（聚成字）
+            ty: cy + y,
+            x: cx + x, y: cy + y,  // 当前位置
+            vx: 0, vy: 0,
+            r: Math.random()*1.4 + 0.6,
+            alpha: 1
+          });
+        }
+      }
+    }
+  }
+
+  let phase = 'gather';    // gather 聚 / scatter 散
+  let timer = 0, hold = 0, scatter = 0;
+
+  function tick(){
+    ctx.fillStyle = 'rgba(5,8,13,0.25)';
+    ctx.fillRect(0,0,W,H);
+
+    if (phase === 'gather') {
+      timer++;
+      if (timer > 100) { phase = 'scatter'; timer = 0; }
+    } else {
+      timer++;
+      if (timer > 90) { phase = 'gather'; timer = 0; }
+    }
+
+    const scat = phase === 'scatter';
+
+    particles.forEach(p => {
+      if (scat){
+        // 被风吹散：朝斜向漂移 + 重力 + 淡出
+        p.vx += (Math.random()-0.6) * 1.1;
+        p.vy += 1.3 + Math.random()*0.5;
+        p.x += p.vx; p.y += p.vy;
+        p.alpha -= 0.02;
+        if (p.alpha < 0.15) p.alpha = 0.15;
+      } else {
+        // 聚回：回吸到目标位置
+        p.vx += (p.tx - p.x) * 0.03;
+        p.vy += (p.ty - p.y) * 0.03;
+        p.vx *= 0.85; p.vy *= 0.85;
+        p.x += p.vx; p.y += p.vy;
+        if (p.alpha < 1) p.alpha += 0.04;
+        if (p.vx*p.vx + p.vy*p.vy < 0.1 && p.alpha>0.99){
+          // 基本到位
+        }
+      }
+
+      ctx.globalAlpha = Math.max(p.alpha,0);
+      ctx.fillStyle = 'rgba(125,200,255,1)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    requestAnimationFrame(tick);
+  }
+
+  sampleText();
+  tick();
+</script>
+</body>
+</html>

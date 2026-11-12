@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑦ — 霓虹灯管逐笔点亮 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0b10;
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden;
+  }
+  .stage { text-align: center; }
+  svg text { font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif; }
+
+  /* 笔画底色：暗管（未点亮） */
+  .base path { fill: none; stroke: rgba(255,45,107,0.16); stroke-width: 2; }
+
+  /* 点亮笔画：亮色描边 + 多层发光 */
+  .lit path {
+    fill: none; stroke: #ff2d6b; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 320; stroke-dashoffset: 320;
+    filter: drop-shadow(0 0 2px #ff2d6b) drop-shadow(0 0 8px #ff2d6b) drop-shadow(0 0 16px #ff2d6b);
+    animation: lightStroke 0.6s ease forwards;
+  }
+  @keyframes lightStroke { to { stroke-dashoffset: 0; } }
+  /* 点亮后通电闪烁 */
+  .lit.on path { animation: lightStroke 0.6s ease forwards, neonFlicker 2.6s ease-in-out 0.6s infinite; }
+  @keyframes neonFlicker {
+    0%,100%{ opacity: 1; } 8%{ opacity: 0.55; } 12%{ opacity: 1; } 20%{ opacity: 0.7; }
+    26%{ opacity: 1; } 70%{ opacity: 0.9; }
+  }
+
+  /* 依次延迟点亮（每笔错开） */
+  .s1 path { animation-delay: 0.00s; }
+  .s2 path { animation-delay: 0.35s; }
+  .s3 path { animation-delay: 0.70s; }
+  .s4 path { animation-delay: 1.05s; }
+  .s5 path { animation-delay: 1.40s; }
+  .s6 path { animation-delay: 1.75s; }
+
+  .meta { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,45,107,0.5); background: rgba(0,0,0,0.4);
+    padding: 4px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <!-- 霓字：逐笔画 path，错开点亮 -->
+    <svg width="260" height="260" viewBox="0 0 260 260">
+      <!-- 雨字头：横 -->
+      <g class="lit s1"><path d="M60,66 L200,66"/></g>
+      <!-- 雨字头：竖 -->
+      <g class="lit s2"><path d="M130,66 L130,106"/></g>
+      <!-- 雨字头：四点 -->
+      <g class="lit s3"><path d="M88,88 L96,84 M104,88 L112,84 M148,88 L156,84 M164,88 L172,84"/></g>
+      <!-- 下部：左竖 -->
+      <g class="lit s4"><path d="M84,110 L84,186"/></g>
+      <!-- 下部：右竖 -->
+      <g class="lit s5"><path d="M176,110 L176,186"/></g>
+      <!-- 下部：底横 -->
+      <g class="lit s6"><path d="M84,186 L176,186"/></g>
+      <!-- 暗管底 -->
+      <g class="base"><path d="M60,66 L200,66 M130,66 L130,106 M88,88 L96,84 M104,88 L112,84 M148,88 L156,84 M164,88 L172,84 M84,110 L84,186 M176,110 L176,186 M84,186 L176,186"/></g>
+    </svg>
+  </div>
+
+  <div class="meta">颠覆文字 ⑦ · 霓虹灯管逐笔点亮</div>
+
+<script>
+  // 等全部点亮后，维持闪烁状态
+  setTimeout(()=>{ document.querySelectorAll('.lit').forEach(g=> g.classList.add('on')); }, 2600);
+</script>
+</body>
+</html>

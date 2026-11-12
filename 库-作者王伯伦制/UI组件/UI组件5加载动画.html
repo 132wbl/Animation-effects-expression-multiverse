@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI组件 五 — 加载动画合集 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0d1117;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+  }
+  .stage { max-width: 760px; text-align: center; }
+  .title { font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .card {
+    width: 220px; min-height: 150px; border-radius: 14px;
+    background: #161b22; border: 1px solid #232a33;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    padding: 16px;
+  }
+  .card .label { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+
+  /* 1 旋转环 */
+  .spin-ring { width: 42px; height: 42px; border-radius: 50%;
+    border: 4px solid rgba(59,130,246,0.2); border-top-color: #3b82f6; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 2 三点弹跳 */
+  .dot-bounce { display: flex; gap: 8px; }
+  .dot-bounce i { width: 12px; height: 12px; border-radius: 50%; background: #10b981; animation: bounce 0.9s ease-in-out infinite; }
+  .dot-bounce i:nth-child(2){ animation-delay: 0.15s; }
+  .dot-bounce i:nth-child(3){ animation-delay: 0.3s; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+
+  /* 3 脉冲圈 */
+  .pulse { width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; animation: pulse 1.2s ease-out infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(139,92,246,0.6)} 100%{box-shadow:0 0 0 26px rgba(139,92,246,0)} }
+
+  /* 4 进度条流动 */
+  .bar { width: 150px; height: 8px; border-radius: 6px; background: #232a33; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 40%; border-radius: 6px;
+    background: linear-gradient(90deg,#22d3ee,#a78bfa); animation: barMove 1.2s ease-in-out infinite; }
+  @keyframes barMove { 0%{margin-left:-40%} 100%{margin-left:100%} }
+
+  /* 5 跑马灯 */
+  .marquee { width: 150px; overflow: hidden; white-space: nowrap; }
+  .marquee span { display: inline-block; letter-spacing: 6px; color: #f59e0b; animation: marquee 1.8s linear infinite; }
+  @keyframes marquee { 0%{transform:translateX(100%)} 100%{transform:translateX(-100%)} }
+
+  /* 6 骨架屏 */
+  .skeleton { width: 130px; display: flex; flex-direction: column; gap: 8px; }
+  .skeleton i { height: 12px; border-radius: 6px; background: linear-gradient(90deg,#232a33 25%,#2f3742 50%,#232a33 75%);
+    background-size: 200% 100%; animation: skeleton 1.2s infinite; }
+  .skeleton i:nth-child(2){ width: 70%; }
+  .skeleton i:nth-child(3){ width: 85%; }
+  @keyframes skeleton { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* 7 表情眨眼 */
+  .face { width: 42px; height: 42px; border-radius: 50%; background: #ef4444; position: relative; }
+  .face::before,.face::after { content:''; position:absolute; top:14px; width:6px; height:8px; border-radius:50%; background:#fff; }
+  .face::before{ left:10px; } .face::after{ right:10px; }
+  .face::before { animation: blink 2s infinite; }
+  @keyframes blink { 0%,90%,100%{height:8px} 95%{height:2px} }
+  .face span { position:absolute; left:50%; top:26px; transform:translateX(-50%); width:14px; height:7px;
+    border-bottom:3px solid #fff; border-radius:0 0 14px 14px; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="title">UI组件 五 · 加载动画合集</div>
+
+    <div class="grid">
+      <div class="card"><div class="spin-ring"></div><div class="label">旋转环</div></div>
+      <div class="card"><div class="dot-bounce"><i></i><i></i><i></i></div><div class="label">三点弹跳</div></div>
+      <div class="card"><div class="pulse"></div><div class="label">脉冲圈</div></div>
+      <div class="card"><div class="bar"><i></i></div><div class="label">进度条</div></div>
+      <div class="card"><div class="marquee"><span>加载中···</span></div><div class="label">跑马灯</div></div>
+      <div class="card"><div class="skeleton"><i></i><i></i><i></i></div><div class="label">骨架屏</div></div>
+      <div class="card"><div class="face"><span></span></div><div class="label">表情</div></div>
+    </div>
+  </div>
+
+  <div class="meta">UI组件 五 · 加载动画合集</div>
+
+</body>
+</html>

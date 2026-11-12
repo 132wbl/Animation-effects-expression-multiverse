@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加载旋转 Spinner — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .spinner{width:48px;height:48px;border:4px solid rgba(0,0,0,0.12);border-top-color:var(--accent,#6366f1);border-radius:50%;animation:spin var(--duration,0.8s) linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:0.8s" -->
+  <div class="spinner"></div>
+</body>
+</html>

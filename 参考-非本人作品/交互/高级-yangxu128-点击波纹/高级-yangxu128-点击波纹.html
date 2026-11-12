@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>点击波纹 Click Ripple — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.ripple-btn{position:relative;overflow:hidden;width:200px;height:60px;background:#6366f1;color:#fff;border:none;border-radius:12px;font-size:18px;font-weight:900;cursor:pointer}.ripple-btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.5);transform:scale(0);animation:rippleAnim .6s linear;pointer-events:none}@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+</style>
+</head>
+<body>
+  <button class="ripple-btn">Click</button>
+<script>const btn=document.querySelector('.ripple-btn');btn.addEventListener('click',e=>{const r=btn.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;const s=document.createElement('span');s.className='ripple';s.style.left=x+'px';s.style.top=y+'px';s.style.width=s.style.height='20px';btn.appendChild(s);setTimeout(()=>s.remove(),600);});</script>
+</body>
+</html>

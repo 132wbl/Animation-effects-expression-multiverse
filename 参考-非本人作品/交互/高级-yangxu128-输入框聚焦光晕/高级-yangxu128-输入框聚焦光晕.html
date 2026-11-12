@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>输入框聚焦光晕 Focus Glow — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.focus-glow{width:260px;padding:14px 16px;border:2px solid #334155;background:#0f1023;color:#fff;border-radius:10px;font-size:16px;outline:none;transition:box-shadow .3s,border-color .3s}.focus-glow:focus{border-color:#22d3ee;box-shadow:0 0 0 3px rgba(34,211,238,0.3),0 0 20px rgba(34,211,238,0.3)}
+</style>
+</head>
+<body>
+  <input class="focus-glow" placeholder="点我聚焦试试">
+
+</body>
+</html>

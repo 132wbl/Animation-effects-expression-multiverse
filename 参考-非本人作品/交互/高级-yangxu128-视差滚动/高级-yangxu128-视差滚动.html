@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视差滚动 Parallax Scroll — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.parallax-wrap{height:70vh;overflow:auto;background:#0f1023}.parallax{font-size:28px;font-weight:900;color:#fff;padding:20px}.parallax .layer{display:inline-block;transition:transform .1s}
+</style>
+</head>
+<body>
+  <div class="parallax-wrap" id="pw"><div class="parallax"><span class="layer" style="color:#22d3ee">前层</span><span style="color:#334155">&nbsp;&nbsp;·&nbsp;&nbsp;</span><span class="layer" style="color:#e879f9">后层</span><br><br>上下滚动这个区域看视差</div><div style="height:200vh"></div></div>
+<script>const pw=document.getElementById('pw');const layers=document.querySelectorAll('.parallax .layer');pw.addEventListener('scroll',()=>{const y=pw.scrollTop;layers.forEach((l,i)=>{const speed=[0.6,1.2][i];l.style.transform=`translateY(${-y*speed}px)`;});});</script>
+</body>
+</html>

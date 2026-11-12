@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>下滑入场 Slide Down — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; font-size: 40px; }
+  .slide-down{animation:slideDown var(--duration,0.6s) ease-out both}@keyframes slideDown{from{opacity:0;transform:translateY(calc(-1*var(--distance,40px)))}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+  <!-- 可调参数：style="--duration:0.6s; --distance:40px" -->
+  <div class="slide-down">Slide Down</div>
+</body>
+</html>

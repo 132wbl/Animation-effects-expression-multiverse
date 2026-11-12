@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分形树 Fractal Tree — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.ftree{width:100%;height:100%}
+</style>
+</head>
+<body>
+  <canvas class="ftree"></canvas>
+<script>const c=document.querySelector('.ftree');const ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;let t=0;function branch(x,y,len,ang,d){if(d<=0||len<2)return;const x2=x+Math.cos(ang)*len,y2=y+Math.sin(ang)*len;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);ctx.strokeStyle=`hsl(${(10-d)*20} 70% 50%)`;ctx.lineWidth=d;ctx.stroke();branch(x2,y2,len*0.75,ang-22*Math.PI/180,d-1);branch(x2,y2,len*0.75,ang+22*Math.PI/180,d-1);}(function draw(){ctx.fillStyle='rgba(15,16,35,0.1)';ctx.fillRect(0,0,c.width,c.height);t+=0.01;ctx.save();ctx.translate(c.width/2,c.height);branch(0,0,200,-Math.PI/2+Math.sin(t)*0.05,8);ctx.restore();requestAnimationFrame(draw);})();</script>
+</body>
+</html>

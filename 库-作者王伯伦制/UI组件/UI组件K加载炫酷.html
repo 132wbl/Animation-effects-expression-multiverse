@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI组件 K — 加载·更多炫酷 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: #0a0e14;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+  }
+  .stage { max-width: 940px; text-align: center; }
+  .title { font-size: 13px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .card {
+    width: 260px; min-height: 170px; border-radius: 14px;
+    background: #141a22; border: 1px solid #222b36;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    padding: 18px;
+  }
+  .card .label { font-size: 12px; color: rgba(255,255,255,0.45); letter-spacing: 1px; }
+
+  /* 1 3D立方体旋转 */
+  .cube { width: 46px; height: 46px; position: relative; transform-style: preserve-3d; animation: cubespin 2s linear infinite; }
+  .cube i { position: absolute; inset: 0; background: rgba(34,211,238,0.28); border: 2px solid #22d3ee; }
+  .cube i:nth-child(1){ transform: translateZ(23px); }
+  .cube i:nth-child(2){ transform: rotateY(180deg) translateZ(23px); }
+  .cube i:nth-child(3){ transform: rotateY(90deg) translateZ(23px); }
+  .cube i:nth-child(4){ transform: rotateY(-90deg) translateZ(23px); }
+  .cube i:nth-child(5){ transform: rotateX(90deg) translateZ(23px); }
+  .cube i:nth-child(6){ transform: rotateX(-90deg) translateZ(23px); }
+  @keyframes cubespin { from { transform: rotateX(-15deg) rotateY(0); } to { transform: rotateX(-15deg) rotateY(360deg); } }
+
+  /* 2 甜甜圈旋转 */
+  .donut { width: 44px; height: 44px; border-radius: 50%;
+    border: 5px solid #a78bfa; border-top-color: #f0abfc; border-bottom-color: #22d3ee;
+    animation: donutspin 0.8s linear infinite; }
+  @keyframes donutspin { to { transform: rotate(360deg); } }
+
+  /* 3 水波圈：涟漪扩散 */
+  .ripple { position: relative; width: 40px; height: 40px; }
+  .ripple span { position: absolute; inset: 0; border-radius: 50%; border: 2px solid #34d399; opacity: 0; animation: ripples 1.8s ease-out infinite; }
+  .ripple span:nth-child(2){ animation-delay: 0.6s; }
+  .ripple span:nth-child(3){ animation-delay: 1.2s; }
+  @keyframes ripples { 0%{ transform:scale(0.2); opacity:1; } 100%{ transform:scale(1.6); opacity:0; } }
+
+  /* 4 火箭升空 */
+  .rocket { position: relative; width: 24px; height: 54px; }
+  .rocket .body { position: absolute; left:50%; top:6px; transform:translateX(-50%); width:14px; height:34px; border-radius:6px 6px 8px 8px;
+    background: linear-gradient(180deg,#f43f5e,#be123c); }
+  .rocket .nose { position: absolute; left:50%; top:1px; transform:translateX(-50%); width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:8px solid #f43f5e; }
+  .rocket .win { position: absolute; top:14px; width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; }
+  .rocket .win.l{ left:1px; border-right:7px solid #fb7185; } .rocket .win.r{ right:1px; border-left:7px solid #fb7185; }
+  .rocket .fire { position:absolute; left:50%; bottom:-8px; transform:translateX(-50%); width:6px; height:14px; border-radius:3px;
+    background: linear-gradient(180deg,#fbbf24,#f97316,transparent); animation: fire 0.18s linear infinite; }
+  .rocket .all { position:absolute; inset:0; animation: liftoff 2.4s ease-in-out infinite; }
+  @keyframes liftoff { 0%,100%{transform:translateY(0)} 20%{transform:translateY(-16px)} 40%{transform:translateY(0)} }
+  @keyframes fire { 0%{height:10px;opacity:0.9} 100%{height:16px;opacity:0.4} }
+
+  /* 5 打字点 */
+  .typing { display: flex; gap: 6px; align-items: center; height: 16px; }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: #f0abfc; animation: typeDot 1.2s infinite; }
+  .typing i:nth-child(2){ animation-delay: 0.2s; }
+  .typing i:nth-child(3){ animation-delay: 0.4s; }
+  @keyframes typeDot { 0%,60%,100%{ opacity:0.15; transform:translateY(0); } 30%{ opacity:1; transform:translateY(-4px); } }
+
+  /* 6 蛇形环 */
+  .snake { width: 46px; height: 46px; border-radius: 50%; position: relative; }
+  .snake i { position:absolute; border-radius:50%; border:3px solid transparent; }
+  .snake i:nth-child(1){ inset:0; border-top-color:#22d3ee; border-left-color:#22d3ee; animation:sneak 1.2s ease-in-out infinite; }
+  .snake i:nth-child(2){ inset:8px; border-right-color:#a78bfa; border-bottom-color:#a78bfa; animation:sneak 1.2s ease-in-out infinite reverse; }
+  @keyframes sneak { 0%{ transform:rotate(0deg); } 100%{ transform:rotate(360deg); } }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="title">UI组件 K · 加载·更多炫酷</div>
+
+    <div class="grid">
+      <div class="card"><div class="cube"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="label">立方体</div></div>
+      <div class="card"><div class="donut"></div><div class="label">甜甜圈</div></div>
+      <div class="card"><div class="ripple"><span></span><span></span><span></span></div><div class="label">水波圈</div></div>
+      <div class="card"><div class="rocket"><div class="all"><div class="nose"></div><div class="body"></div><div class="win l"></div><div class="win r"></div></div><div class="fire"></div></div><div class="label">火箭</div></div>
+      <div class="card"><div class="typing"><i></i><i></i><i></i></div><div class="label">打字点</div></div>
+      <div class="card"><div class="snake"><i></i><i></i></div><div class="label">蛇形环</div></div>
+    </div>
+  </div>
+
+  <div class="meta">UI组件 K · 加载·更多炫酷</div>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 H — 聚焦清晰 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 50%, #0f1420, #070a11 80%);
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 逐字聚焦 */
+  .focus { font-size: 76px; font-weight: 400; letter-spacing: 6px; color: #e8e4d8; }
+  .focus span {
+    display: inline-block; opacity: 0.1;
+    filter: blur(18px); transform: scale(1.7);
+    animation: focusIn 4.5s ease-out infinite;
+    text-shadow: 0 0 22px rgba(200,190,160,0.0);
+  }
+  /* 逐个错开聚焦 */
+  .focus span:nth-child(1) { animation-delay: 0.0s; }
+  .focus span:nth-child(2) { animation-delay: 0.35s; }
+  .focus span:nth-child(3) { animation-delay: 0.7s; }
+  .focus span:nth-child(4) { animation-delay: 1.05s; }
+  .focus span:nth-child(5) { animation-delay: 1.4s; }
+
+  @keyframes focusIn {
+    0%   { opacity: 0.1; filter: blur(18px); transform: scale(1.7); text-shadow: 0 0 22px rgba(220,210,180,0); }
+    30%  { opacity: 1;   filter: blur(0);    transform: scale(1);   text-shadow: 0 0 24px rgba(220,210,180,0.6); }
+    80%  { opacity: 1;   filter: blur(0);    transform: scale(1);   text-shadow: 0 0 10px rgba(220,210,180,0.25); }
+    100% { opacity: 0.1; filter: blur(14px); transform: scale(1.45); text-shadow: 0 0 18px rgba(220,210,180,0); }
+  }
+
+  .sub { margin-top: 26px; font-size: 14px; letter-spacing: 4px; color: rgba(230,225,210,0.5); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); background: rgba(0,0,0,0.35);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="focus">
+      <span>觉</span><span>醒</span><span>时</span><span>刻</span><span>。</span>
+    </div>
+    <div class="sub">从模糊到清晰 · 聚焦</div>
+  </div>
+
+  <div class="meta">文字动效 H · 聚焦清晰</div>
+
+<script>
+  // 预留：可改文字（每个字一个 span）
+</script>
+</body>
+</html>

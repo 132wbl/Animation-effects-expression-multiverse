@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颠覆文字 ⑤ — 液态金属 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 45%, #1a1614, #080705 82%);
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden;
+  }
+  .stage { text-align: center; }
+
+  /* 液态金属字 */
+  .metal {
+    position: relative; display: inline-block;
+    font-size: 140px; font-weight: 400; letter-spacing: 12px;
+    color: transparent; -webkit-text-fill-color: transparent;
+    background-image:
+      linear-gradient(90deg, #6b6f76, #d4d7dd 20%, #8a8f97 40%, #f0f2f5 50%, #6b6f76 70%, #b9bec6 90%, #6b6f76);
+    background-size: 250% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    animation: metalFlow 6s linear infinite;
+    text-shadow: none;
+  }
+  /* 流动的金属光泽 */
+  @keyframes metalFlow { to { background-position: 250% 0; } }
+
+  /* 底部熔化的金属滴 */
+  .metal::after {
+    content: ''; position: absolute; left: 12%; right: 12%; bottom: -22px; height: 22px;
+    background: radial-gradient(50% 100% at 50% 0%, rgba(190,195,205,0.55), transparent 75%);
+    filter: blur(6px);
+    animation: drip 3s ease-in-out infinite;
+  }
+  @keyframes drip {
+    0%,100% { transform: translateY(0) scaleY(1); opacity: 0.5; }
+    50% { transform: translateY(6px) scaleY(1.35); opacity: 0.8; }
+  }
+
+  .sub { margin-top: 40px; font-size: 14px; letter-spacing: 5px; color: rgba(200,205,215,0.5); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(210,215,225,0.4); background: rgba(0,0,0,0.4);
+    padding: 5px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <span class="metal">熔</span>
+    <div class="sub">液态金属 · 熔</div>
+  </div>
+
+  <div class="meta">颠覆文字 ⑤ · 液态金属</div>
+
+<script>
+  // 预留：可改字（改 .metal 里的字）
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>切换翻转 Toggle Flip — Motion.Lab 自研动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0f1023; color: #fff; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+.toggle{position:relative;width:90px;height:50px;background:#334155;border-radius:25px;cursor:pointer;transition:background .3s}.toggle.on{background:#22d3ee}.toggle .knob{position:absolute;top:5px;left:5px;width:40px;height:40px;background:#fff;border-radius:50%;transition:transform .3s}.toggle.on .knob{transform:translateX(40px)}
+</style>
+</head>
+<body>
+  <div class="toggle" id="toggle"><div class="knob"></div></div>
+<script>const t=document.getElementById('toggle');t.addEventListener('click',()=>t.classList.toggle('on'));</script>
+</body>
+</html>
