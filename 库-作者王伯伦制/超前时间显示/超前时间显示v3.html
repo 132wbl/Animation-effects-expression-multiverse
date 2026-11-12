@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>超前时间显示 v3 — 全息胶囊 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #1b1a2e, #0a0a16 72%);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif; overflow: hidden;
+  }
+
+  /* 全息胶囊：紧凑，放任务栏/状态栏位置 */
+  .pill {
+    position: relative; display: inline-flex; align-items: center; gap: 18px;
+    padding: 12px 24px; border-radius: 40px; isolation: isolate;
+    background: linear-gradient(135deg, rgba(120,180,255,0.16), rgba(233,180,255,0.12), rgba(255,220,150,0.14));
+    backdrop-filter: blur(16px) saturate(1.6);
+    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.25),
+      0 10px 34px rgba(0,0,0,0.45),
+      0 0 40px rgba(120,180,255,0.18);
+    border: 1px solid rgba(255,255,255,0.14);
+    overflow: hidden;
+  }
+  /* 全息扫光 */
+  .pill::before {
+    content: ''; position: absolute; inset: 0; border-radius: 40px; z-index: -1;
+    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.22) 28%, transparent 55%);
+    animation: hologram 5.5s ease-in-out infinite;
+  }
+  @keyframes hologram { 0%,100% { transform: translateX(-90%); } 50% { transform: translateX(90%); } }
+
+  /* 时间：全息渐变 */
+  .pill .h { font-size: 40px; font-weight: 800; letter-spacing: 2px; font-variant-numeric: tabular-nums;
+    background: linear-gradient(110deg, #9fd8ff, #c7b0ff 40%, #ffc7e0 75%, #9fd8ff); background-size: 240% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent; animation: pillFlow 6s linear infinite; }
+  @keyframes pillFlow { to { background-position: 240% 100%; } }
+  .pill .h .colon { animation: pillBlink 1s steps(1) infinite; }
+  @keyframes pillBlink { 50% { opacity: 0.2; } }
+
+  /* 秒：小号光晕 */
+  .pill .sec { font-size: 16px; font-weight: 600; color: rgba(233,180,255,0.95); letter-spacing: 2px; font-variant-numeric: tabular-nums; text-shadow: 0 0 12px rgba(233,180,255,0.6); }
+
+  /* 日期/星期：全息小字 */
+  .pill .meta { display: flex; flex-direction: column; gap: 2px; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.2); }
+  .pill .meta .wd { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.92); letter-spacing: 2px; }
+  .pill .meta .dt { font-size: 11px; color: rgba(255,255,255,0.62); letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+
+  /* 底部呼吸光带 */
+  .pill::after {
+    content: ''; position: absolute; left: 10%; right: 10%; bottom: -2px; height: 3px; border-radius: 2px; z-index: -1;
+    background: linear-gradient(90deg, transparent, #6ee7ff, #f0abfc, transparent);
+    filter: blur(1px); animation: pillBreathe 3s ease-in-out infinite; opacity: 0.7;
+  }
+  @keyframes pillBreathe { 0%,100% { opacity: 0.3; } 50% { opacity: 0.9; } }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.38); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="pill">
+    <span class="h" id="h">00:00</span>
+    <span class="sec" id="sec">00</span>
+    <span class="meta">
+      <span class="wd" id="wd">星期四</span>
+      <span class="dt" id="dt">2026/11/12</span>
+    </span>
+  </div>
+
+  <div class="tag">超前时间显示 v3 · 全息胶囊</div>
+
+<script>
+  const hEl = document.getElementById('h');
+  const secEl = document.getElementById('sec');
+  const wdEl = document.getElementById('wd');
+  const dtEl = document.getElementById('dt');
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  function tick(){
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    hEl.innerHTML = `${hh}<span class="colon">:</span>${mm}`;
+    secEl.textContent = String(now.getSeconds()).padStart(2,'0');
+    wdEl.textContent = WEEK[now.getDay()];
+    dtEl.textContent = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+  }
+  setInterval(tick, 200); tick();
+</script>
+</body>
+</html>

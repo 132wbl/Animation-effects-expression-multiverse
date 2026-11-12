@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>钟表 v1.2 — 精致写实座钟 · 王伯伦原创动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; background: radial-gradient(circle at 50% 22%, #3d3654, #121020 68%);
+    color: #fff; font-family: Georgia, "Times New Roman", serif; overflow: hidden;
+  }
+  .scene { position: relative; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 24px 40px rgba(0,0,0,0.55)); }
+
+  /* ============ 钟体外框（木纹 + 金属包边） ============ */
+  .clock {
+    position: relative; width: 320px; height: 320px; border-radius: 50%;
+    background:
+      radial-gradient(circle at 36% 26%, rgba(255,220,160,0.16), rgba(0,0,0,0.4) 72%),
+      repeating-linear-gradient(96deg,
+        #5f3d1e 0px, #6f4a24 4px, #5c3a1c 8px, #7a532a 12px, #5f3d1e 16px);
+    box-shadow:
+      inset 0 -14px 30px rgba(0,0,0,0.7),
+      inset 0 8px 14px rgba(255,224,168,0.20),
+      0 18px 52px rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* 金属外圈 */
+  .clock::before {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    box-shadow: inset 0 0 0 6px #8a6d3b, inset 0 0 0 7px #3a2c14, inset 0 0 0 11px #b98a3f, inset 0 0 0 12px #4a3416;
+  }
+  /* ============ 表盘（象牙白 + 玻璃反光） ============ */
+  .face {
+    position: absolute; inset: 22px; border-radius: 50%;
+    background:
+      radial-gradient(circle at 38% 26%, #fffdf4, #f2e4c4 62%, #e0c99a);
+    box-shadow: inset 0 3px 16px rgba(120,90,40,0.42);
+    overflow: hidden;
+  }
+  .face::before { /* 玻璃高光 */
+    content: ''; position: absolute; left: -18%; top: -26%; width: 74%; height: 64%;
+    border-radius: 60%; background: linear-gradient(200deg, rgba(255,255,255,0.62), rgba(255,255,255,0.02));
+    filter: blur(5px); transform: rotate(-14deg); pointer-events: none;
+  }
+  .face::after { /* 表盘轻微内阴影 */
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    box-shadow: inset 0 12px 30px rgba(70,50,20,0.18), inset 0 -8px 20px rgba(70,50,20,0.12);
+  }
+
+  /* ============ 刻度：从中心辐射 ============ */
+  .tick { position: absolute; left: 50%; top: 50%; }
+  .tick::after { content: ''; position: absolute; left: -2px; top: -7px; width: 4px; height: 7px; background: #3a2c14; border-radius: 1px; }
+  .tick.major::after { left: -3px; top: -9px; width: 6px; height: 9px; background: linear-gradient(#3a2c14,#241a0a); border-radius: 2px; }
+  .tick.minor::after { left: -1px; top: -5px; width: 2px; height: 5px; background: #6b4a24; }
+
+  /* ============ 数字（衬线，带浅投影） ============ */
+  .digit { position: absolute; font-size: 26px; font-weight: 700; color: #2f2410; transform: translate(-50%,-50%); text-shadow: 0 1px rgba(255,255,255,0.5); }
+
+  /* ============ 指针：底座精准居中 ============ */
+  .hand { position: absolute; left: 50%; top: 50%; transform-origin: 50% 100%; will-change: transform; }
+  .hand-hour {
+    width: 10px; height: 88px; margin-left: -5px; margin-top: -88px;
+    background: linear-gradient(90deg, #241a0c, #4a3416 40%, #241a0c);
+    border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  }
+  .hand-hour::before { content: ''; position: absolute; left: 50%; top: -7px; width: 15px; height: 16px; transform: translateX(-50%); background: linear-gradient(90deg,#1c1408,#3a2c14,#1c1408); border-radius: 3px; }
+  .hand-minute {
+    width: 6px; height: 122px; margin-left: -3px; margin-top: -122px;
+    background: linear-gradient(90deg, #1c1408, #3a2c14 40%, #1c1408);
+    border-radius: 3px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  }
+  .hand-minute::before { content: ''; position: absolute; left: 50%; top: -5px; width: 11px; height: 12px; transform: translateX(-50%); background: linear-gradient(90deg,#1c1408,#3a2c14,#1c1408); border-radius: 3px; }
+  .hand-second {
+    width: 3px; height: 128px; margin-left: -1.5px; margin-top: -128px;
+    background: linear-gradient(#d8452f, #b02a17 72%, #7e1c12);
+    border-radius: 2px; z-index: 4;
+  }
+  .hand-second::before { /* 秒针尾部配重 */
+    content: ''; position: absolute; left: 50%; top: 112px; width: 9px; height: 9px; transform: translateX(-50%); background: #c0392b; border-radius: 50%; }
+  .hand-second::after { /* 秒针针尖 */
+    content: ''; position: absolute; left: 50%; top: -9px; width: 0; height: 0; transform: translateX(-50%); border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 9px solid #c0392b; }
+
+  /* ============ 中心轴心（金属三叠） ============ */
+  .hub {
+    position: absolute; left: 50%; top: 50%; z-index: 8;
+    width: 22px; height: 22px; transform: translate(-50%,-50%);
+    background: radial-gradient(circle at 40% 32%, #ffe9b0, #b98a3f 62%, #6b4a24);
+    border-radius: 50%; box-shadow: 0 0 0 4px #3a2c14, 0 2px 5px rgba(0,0,0,0.5);
+  }
+  .hub::after {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; transform: translate(-50%,-50%);
+    background: radial-gradient(circle, #fff2cc, #8a6d3b); border-radius: 50%;
+  }
+
+  /* ============ 钟摆 ============ */
+  .pendulum-pivot {
+    position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+    width: 34px; height: 18px; margin-top: -2px;
+    background: linear-gradient(#f0dba8, #8a6d3b); border-radius: 6px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5); z-index: 3;
+  }
+  .pendulum-arm {
+    position: absolute; left: 50%; top: 100%; width: 7px; height: 186px; margin-left: -3.5px; margin-top: -2px;
+    background: linear-gradient(90deg, #b98a3f, #f0dba8 45%, #b98a3f);
+    border-radius: 4px; z-index: 2;
+  }
+  .pendulum-bob {
+    position: absolute; left: 50%; bottom: 6px; width: 58px; height: 58px; margin-left: -29px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 36% 28%, rgba(255,255,255,0.55), rgba(255,255,255,0) 40%),
+      radial-gradient(circle at 50% 50%, #f7e2a8, #d9a520 52%, #8a6210 88%);
+    box-shadow: inset 0 -10px 18px rgba(90,60,8,0.6), inset 0 4px 8px rgba(255,244,200,0.4), 0 8px 20px rgba(0,0,0,0.5);
+  }
+  .pendulum-bob::before { content: ''; position: absolute; inset: 8px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(90,60,8,0.35); }
+  .swing { animation: swingAnim var(--swing, 1.2s) cubic-bezier(0.36,0,0.64,1) infinite; transform-origin: 50% 0; will-change: transform; }
+  @keyframes swingAnim { 0%,100% { transform: rotate(10deg); } 50% { transform: rotate(-10deg); } }
+
+  /* ============ 到点提示 ============ */
+  .banner { position: fixed; top: 26px; left: 50%; transform: translateX(-50%); font-size: 46px; font-weight: 900; color: #ffd980; text-shadow: 0 0 26px rgba(255,208,120,0.75); opacity: 0; transition: opacity .9s; letter-spacing: 5px; pointer-events: none; z-index: 20; }
+  .banner.on { opacity: 1; }
+
+  .panel {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 14px; align-items: center; background: rgba(20,17,36,0.82);
+    padding: 14px 22px; border-radius: 14px; border: 1px solid #8a6d3b; z-index: 30;
+  }
+  .panel label { font-size: 14px; color: #e8d29a; }
+  .panel input[type="time"] { background: #141124; color: #ffd980; border: 1px solid #8a6d3b; border-radius: 6px; padding: 6px 10px; font-size: 16px; }
+  .panel button { background: #b8860b; color: #141124; border: none; border-radius: 6px; padding: 6px 18px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .panel button:hover { background: #ffd980; }
+  .status { font-size: 13px; color: #b6c2d6; }
+</style>
+</head>
+<body>
+
+  <div class="banner" id="banner">🛎️ 铛！铛！</div>
+
+  <div class="scene">
+    <div class="clock">
+      <div class="face" id="face"></div>
+      <div class="hand hand-hour" id="hourHand"></div>
+      <div class="hand hand-minute" id="minuteHand"></div>
+      <div class="hand hand-second" id="secondHand"></div>
+      <div class="hub"></div>
+    </div>
+    <div class="pendulum-pivot"></div>
+    <div class="pendulum-arm swing" id="arm">
+      <div class="pendulum-bob"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label>设定到点敲钟：</label>
+    <input type="time" id="alarmTime" value="10:44">
+    <button id="setBtn">设置</button>
+    <span class="status" id="status">未设置</span>
+  </div>
+
+<script>
+  // ---- 表盘：60 刻度 + 12 数字，全部从中心辐射 ----
+  const face = document.getElementById('face');
+  const R = 132; // 表盘内半径（px）——数字/刻度据此定位
+  for (let i = 0; i < 60; i++) {
+    const t = document.createElement('div');
+    t.className = 'tick' + (i % 5 === 0 ? ' major' : ' minor');
+    t.style.transform = `rotate(${i*6}deg)`;
+    face.appendChild(t);
+  }
+  const nums = [12,1,2,3,4,5,6,7,8,9,10,11];
+  nums.forEach((n, i) => {
+    const rad = (i*30 - 90) * Math.PI / 180;
+    const r = 108;   // 数字到中心的半径
+    const d = document.createElement('div');
+    d.className = 'digit';
+    d.style.left = (50 + Math.cos(rad)*r/158*50) + '%';
+    d.style.top  = (50 + Math.sin(rad)*r/158*50) + '%';
+    d.textContent = n;
+    face.appendChild(d);
+  });
+
+  // ---- 真实钟表声：多非谐波泛音 + 噪声敲击头 + 指数衰减余韵 ----
+  let audioCtx = null;
+  function ensureCtx(){
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function strike(ctx, t, freq){
+    const out = ctx.createGain(); out.gain.value = 1; out.connect(ctx.destination);
+    const partials = [1, 2.37, 3.71, 5.14];
+    const amps     = [1.0, 0.32, 0.14, 0.07];
+    partials.forEach((mult, idx) => {
+      const osc = ctx.createOscillator(); const g = ctx.createGain();
+      osc.type = 'sine'; osc.frequency.value = freq*mult;
+      const peak = amps[idx];
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(peak, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2 - idx*0.4);
+      osc.connect(g).connect(out); osc.start(t); osc.stop(t + 3.3);
+    });
+    const noise = ctx.createBufferSource();
+    const len = Math.floor(ctx.sampleRate * 0.025);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const nd = buf.getChannelData(0);
+    for (let i=0;i<len;i++) nd[i] = (Math.random()*2-1)*Math.pow(1-i/len,3);
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.5, t); ng.gain.exponentialRampToValueAtTime(0.0001, t+0.03);
+    const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=freq*2; bp.Q.value=0.7;
+    noise.buffer=buf; noise.connect(bp); bp.connect(ng); ng.connect(out);
+    noise.start(t); noise.stop(t+0.05);
+    return out;
+  }
+  function chime(times){
+    const ctx = ensureCtx();
+    const base = 300;
+    for(let k=0;k<times;k++){
+      const t0 = ctx.currentTime + 0.06 + k*0.98;
+      strike(ctx, t0, base);
+      strike(ctx, t0+0.02, base*1.5); // 和声，更厚
+    }
+  }
+
+  // ---- 指针更新（底座已居中，只转角度） ----
+  const hourHand   = document.getElementById('hourHand');
+  const minuteHand = document.getElementById('minuteHand');
+  const secondHand = document.getElementById('secondHand');
+  const banner     = document.getElementById('banner');
+  let alarmSet = null, lastChimeMinute = -1;
+
+  function tick(){
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds(), ms = now.getMilliseconds();
+    const secDeg = s*6 + ms*0.006;               // 秒针连续平滑走动
+    const minDeg = m*6 + s*0.1;
+    const hourDeg = (h%12)*30 + m*0.5;
+    secondHand.style.transform = `rotate(${secDeg}deg)`;
+    minuteHand.style.transform = `rotate(${minDeg}deg)`;
+    hourHand.style.transform   = `rotate(${hourDeg}deg)`;
+    if(alarmSet && h===alarmSet.h && m===alarmSet.m && s===0 && ms<100){
+      if(lastChimeMinute !== h*60+m){
+        lastChimeMinute = h*60+m;
+        const times = (h%12)===0 ? 12 : (h%12);
+        chime(times);
+        banner.classList.add('on');
+        setTimeout(()=>banner.classList.remove('on'), 4200);
+      }
+    }
+  }
+
+  // ---- 设置 ----
+  const alarmInput = document.getElementById('alarmTime');
+  const setBtn = document.getElementById('setBtn');
+  const status = document.getElementById('status');
+  setBtn.addEventListener('click', ()=>{
+    const v = alarmInput.value;
+    if(!v){ alarmSet=null; status.textContent='已关闭'; return; }
+    const [hh,mm] = v.split(':').map(Number);
+    alarmSet = {h:hh, m:mm};
+    status.textContent = `已设 ${hh}:${String(mm).padStart(2,'0')}，到点敲 ${(hh%12)===0?12:(hh%12)} 声`;
+  });
+
+  setInterval(tick, 30); // 高频更新，秒针顺滑
+  tick();
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间表达 ① 沙漏 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #1f2233, #0b0c14 72%);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; color: #fff;
+  }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+  /* 沙漏 */
+  .hourglass { position: relative; width: 130px; height: 200px; }
+  /* 顶/底圆框 */
+  .top, .bottom { position: absolute; left: 50%; transform: translateX(-50%); width: 104px; height: 20px;
+    border-radius: 8px; background: linear-gradient(#e8d29a, #8a6d3b); box-shadow: 0 3px 8px rgba(0,0,0,0.5); z-index: 3; }
+  .top { top: 0; }
+  .bottom { bottom: 0; }
+  /* 两侧立柱 */
+  .pillar { position: absolute; top: 14px; bottom: 14px; width: 6px; background: linear-gradient(#d9b98a, #6b4a24); z-index: 2; }
+  .pillar.l { left: 4px; } .pillar.r { right: 4px; }
+  /* 玻璃体 */
+  .glass { position: absolute; inset: 20px 14px; overflow: hidden; z-index: 1; }
+  .glass-top, .glass-bot { position: absolute; left: 0; right: 0; height: 50%; }
+  .glass-top { top: 0; } .glass-bot { bottom: 0; }
+  /* 玻璃描边 */
+  .glass::before { content: ''; position: absolute; inset: 0;
+    border-top: 4px solid rgba(200,220,255,0.35); border-bottom: 4px solid rgba(200,220,255,0.35); border-radius: 4px; }
+  /* 流沙 */
+  .sand { position: absolute; left: 10%; right: 10%; bottom: 0; background: linear-gradient(#f0d080, #c99a2e);
+    transition: height 1s linear; box-shadow: inset 0 6px 10px rgba(120,80,10,0.4); }
+  .sand-bot { border-radius: 6px 6px 3px 3px; }
+  .sand-top { border-radius: 6px 6px 6px 6px; }
+  /* 落沙细流 */
+  .stream { position: absolute; left: 50%; transform: translateX(-50%); width: 4px; background: linear-gradient(#f0d080,#d9a520); opacity: 0.9; }
+
+  /* 数字 + 日期 */
+  .clock { text-align: center; }
+  .clock .t { font-size: 44px; font-weight: 800; letter-spacing: 3px; font-variant-numeric: tabular-nums;
+    background: linear-gradient(120deg,#f5d78a,#e8a76a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .clock .d { margin-top: 6px; font-size: 14px; letter-spacing: 2px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="hourglass">
+      <div class="top"></div><div class="bottom"></div>
+      <div class="pillar l"></div><div class="pillar r"></div>
+      <div class="glass">
+        <div class="glass-bot"><div class="sand sand-bot" id="sandBot"></div></div>
+        <div class="glass-top"><div class="sand sand-top" id="sandTop"></div></div>
+        <div class="stream" id="stream" style="top:48%;height:6%"></div>
+      </div>
+    </div>
+
+    <div class="clock">
+      <div class="t" id="t">11:55</div>
+      <div class="d" id="d">2026/11/12 星期四</div>
+    </div>
+  </div>
+
+  <div class="tag">时间表达 ① · 沙漏</div>
+
+<script>
+  const sandBot = document.getElementById('sandBot');
+  const sandTop = document.getElementById('sandTop');
+  const stream = document.getElementById('stream');
+  const tEl = document.getElementById('t');
+  const dEl = document.getElementById('d');
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+
+  // 用一天内的时间进度决定上下沙量：整点为0分点时自动"翻转沙漏"（简单模拟，每分钟平滑过渡）
+  function update(){
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    const dayFrac = (h*3600 + m*60 + s) / 86400;   // 0..1 一天进度
+    const top = Math.round(dayFrac * 98) + 2;       // 上方沙占比
+    const bot = 100 - top;                          // 下方沙
+    sandTop.style.height = top + '%';
+    sandBot.style.height = bot + '%';
+    // 落沙细流位置（在上下沙交界）
+    stream.style.top = (bot + 2) + '%';
+    stream.style.height = '5%';
+    tEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    dEl.textContent = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${WEEK[now.getDay()]}`;
+  }
+  setInterval(update, 1000);
+  update();
+</script>
+</body>
+</html>

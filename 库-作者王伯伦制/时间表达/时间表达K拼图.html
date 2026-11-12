@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间表达 K — 拼图时间 v1 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 42%, #101527, #06070d 76%);
+    font-family: "Segoe UI", system-ui, sans-serif; color: #e8f0fa; overflow: hidden;
+    user-select: none; -webkit-user-select: none;
+  }
+
+  .stage { position: relative; width: 780px; height: 460px; display: flex; align-items: center; justify-content: center; outline: none; }
+
+  /* ================= 拼图盘底：一块深色垫板 ================= */
+  .board {
+    position: relative; width: 720px; height: 420px; border-radius: 16px;
+    padding: 0;
+    background:
+      radial-gradient(120% 120% at 50% 0%, rgba(30,42,60,0.55), rgba(8,11,17,0.92) 70%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.05),
+      inset 0 0 60px rgba(0,0,0,0.75),
+      0 26px 60px rgba(0,0,0,0.55);
+  }
+
+  /* ================= 24 块 = 24 小时 ================= */
+  .tile { position: absolute; width: 116px; height: 101px; will-change: transform; }
+  .tile.snapping { transition: transform 0.66s cubic-bezier(.2,.9,.25,1.1), opacity 0.5s ease-out; }
+
+  .tile .face {
+    position: absolute; inset: 0; border-radius: 10px;
+    background: linear-gradient(150deg, rgba(36,44,58,0.92), rgba(13,17,25,0.94));
+    border: 1px solid rgba(120,150,180,0.13);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -2px 7px rgba(0,0,0,0.55);
+  }
+  /* 每块带一点极光偏色：24 块各不相同，拼齐了才成一片 */
+  .tile .tint {
+    position: absolute; inset: 0; border-radius: 10px; pointer-events: none;
+    background: radial-gradient(circle at 32% 22%, var(--tint, transparent), transparent 72%);
+    opacity: 0.12; mix-blend-mode: screen;
+  }
+  .tile.future .tint { opacity: 0; }
+
+  /* 已过去的小时：实心、沉着、已经咬合 */
+  .tile.past .face {
+    background: linear-gradient(150deg, rgba(60,76,95,0.96), rgba(21,29,40,0.97));
+    border-color: rgba(150,190,215,0.26);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 8px rgba(0,0,0,0.6), 0 0 14px rgba(80,200,220,0.08);
+  }
+
+  /* 当前这一小时：正在拼合中 */
+  .tile.now .face {
+    background: linear-gradient(150deg, rgba(74,98,124,0.96), rgba(24,34,48,0.97));
+    border-color: rgba(125,249,255,0.55);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 8px rgba(0,0,0,0.55), 0 0 26px rgba(0,229,255,0.30);
+    animation: tileBreathe 3.4s ease-in-out infinite;
+  }
+  /* 这一块被“拼上”多少（分钟进度） */
+  .tile .fill {
+    position: absolute; left: 1px; right: 1px; bottom: 1px; height: 0%;
+    border-radius: 0 0 9px 9px;
+    background: linear-gradient(180deg, rgba(0,229,255,0.30), rgba(0,120,160,0.14));
+    box-shadow: 0 0 20px rgba(0,229,255,0.22);
+    transition: height 0.4s linear;
+  }
+
+  /* 未来的小时：还没拼上的空槽 —— 虚线、透底 */
+  .tile.future .face {
+    background: rgba(9,12,18,0.42);
+    border: 1px dashed rgba(120,150,180,0.34);
+    box-shadow: inset 0 0 22px rgba(0,0,0,0.55);
+  }
+  .tile.future { opacity: 0.70; }
+
+  /* 拼好的那一刻：空槽被一块块填满 */
+  .board.open .tile.future { opacity: 1; }
+  .board.open .tile.future .face {
+    background: linear-gradient(150deg, rgba(52,68,86,0.96), rgba(17,23,32,0.97));
+    border: 1px solid rgba(125,249,255,0.34);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.13), inset 0 -2px 8px rgba(0,0,0,0.55), 0 0 18px rgba(0,229,255,0.14);
+  }
+
+  /* 拼好时一条光沿着缝隙扫过 */
+  .seam {
+    position: absolute; inset: 0; border-radius: 16px; pointer-events: none; opacity: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(125,249,255,0.16) 50%, transparent 60%);
+    background-size: 260% 100%;
+    transition: opacity 0.4s ease-out;
+  }
+  .board.open .seam { opacity: 1; animation: seamSweep 2.8s linear infinite; }
+
+  /* 拼好时中心压暗一点，让时间读数从缝里浮出来 */
+  .veil {
+    position: absolute; inset: 0; border-radius: 16px; pointer-events: none; z-index: 4; opacity: 0;
+    background: radial-gradient(closest-side at 50% 50%, rgba(3,5,9,0.94), rgba(3,5,9,0.34) 52%, transparent 78%);
+    transition: opacity 0.45s ease-out;
+  }
+  .board.open .veil { opacity: 1; }
+
+  @keyframes tileBreathe {
+    0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 8px rgba(0,0,0,0.55), 0 0 20px rgba(0,229,255,0.22); }
+    50%      { box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -2px 8px rgba(0,0,0,0.55), 0 0 34px rgba(0,229,255,0.46); }
+  }
+  @keyframes seamSweep { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+
+  /* ================= 拼好的那一刻：时间从缝里浮出来 ================= */
+  .digits {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; gap: 10px; pointer-events: none; z-index: 5;
+  }
+  .dp {
+    position: relative; width: 84px; height: 108px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 58px; font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums;
+    color: #eaf6ff; text-shadow: 0 0 20px rgba(125,249,255,0.60), 0 0 44px rgba(155,89,255,0.32);
+    background: linear-gradient(155deg, rgba(46,60,78,0.97), rgba(12,16,24,0.98));
+    border: 1px solid rgba(125,249,255,0.38);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -3px 10px rgba(0,0,0,0.65), 0 12px 34px rgba(0,0,0,0.55), 0 0 30px rgba(0,229,255,0.20);
+    will-change: transform, opacity;
+  }
+  .dp.colon { width: 34px; font-size: 40px; color: #7df9ff; border-color: rgba(125,249,255,0.24); }
+
+  /* ================= 秒：缝里一格一格被填满 ================= */
+  .ticks {
+    position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%);
+    width: 336px; height: 5px; border-radius: 3px; overflow: hidden;
+    background: repeating-linear-gradient(90deg, rgba(125,249,255,0.20) 0 1px, transparent 1px 5.6px);
+    pointer-events: none;
+  }
+
+  .tickfill {
+    position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+    background: linear-gradient(90deg, rgba(125,249,255,0.9), rgba(155,89,255,0.9));
+    box-shadow: 0 0 14px rgba(125,249,255,0.8);
+  }
+
+  /* ================= 底部 ================= */
+  .meta { position: absolute; left: 50%; bottom: -96px; transform: translateX(-50%); text-align: center; pointer-events: none; }
+  .meta .date { font-size: 13px; letter-spacing: 3px; color: rgba(226,242,255,0.52); font-variant-numeric: tabular-nums; }
+  .meta .hint { margin-top: 9px; font-size: 11px; letter-spacing: 3px; color: rgba(148,163,184,0.55); transition: opacity 0.45s ease-out; }
+  .meta .hint.off { opacity: 0; }
+
+  .tag { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.26); }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage" tabindex="0" aria-label="拼图时间：把指针移到拼图上，看此刻">
+  <div class="board" id="board">
+    <div class="seam"></div>
+    <div class="veil"></div>
+
+    <div class="digits" id="digits" aria-hidden="true">
+      <div class="dp" data-k="h1"></div>
+      <div class="dp" data-k="h2"></div>
+      <div class="dp colon" data-k="c"></div>
+      <div class="dp" data-k="m1"></div>
+      <div class="dp" data-k="m2"></div>
+    </div>
+  </div>
+
+  <div class="ticks"><div class="tickfill" id="tickfill"></div></div>
+
+  <div class="meta">
+    <div class="date" id="date"></div>
+    <div class="hint" id="hint">指针移上来 · 拼好这一块</div>
+  </div>
+</div>
+
+<div class="tag">时间表达 K v1 · 拼图时间 · 王伯伦原创</div>
+
+<script>
+(() => {
+  const COLS = 6, ROWS = 4, TOTAL = COLS * ROWS;   // 24 块 = 24 小时
+  const TW = 116, TH = 101, GAP = 4;
+
+  const stage   = document.getElementById('stage');
+  const board   = document.getElementById('board');
+  const digits  = document.getElementById('digits');
+  const tickfill = document.getElementById('tickfill');
+  const dateEl  = document.getElementById('date');
+  const hintEl  = document.getElementById('hint');
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const forceOpen = location.hash === '#demo';      // 验收用：文件后加 #demo 直接看拼好的样子
+
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  const hourNow = () => new Date().getHours();
+
+  /* ---------- 建 24 块 ---------- */
+  const tiles = [];
+  for (let i = 0; i < TOTAL; i++) {
+    const c = i % COLS, r = Math.floor(i / COLS);
+    const el = document.createElement('div');
+    el.className = 'tile';
+    el.style.left = (c * (TW + GAP)) + 'px';
+    el.style.top  = (r * (TH + GAP)) + 'px';
+    el.innerHTML = '<div class="face"><div class="fill"></div><i class="tint"></i></div>';
+    el.style.setProperty('--tint', `hsl(${168 + i * 4} 80% 62%)`);
+    board.appendChild(el);
+    tiles.push({
+      el, i,
+      fill: el.querySelector('.fill'),
+      p1: Math.random() * Math.PI * 2,
+      p2: Math.random() * Math.PI * 2,
+    });
+  }
+
+  /* ---------- 数字块（拼好时飞入） ---------- */
+  const pieces = [...digits.querySelectorAll('.dp')];
+  pieces.forEach((p) => {
+    p.innerHTML = '<span></span>';
+    p._span = p.querySelector('span');
+  });
+
+  let isOpen = false;
+  let closeTimer = null;
+  const mouse = { x: -9999, y: -9999, inside: false };
+
+  /* ---------- 打散 / 归位 ---------- */
+  function scatterPieces() {
+    pieces.forEach((p) => {
+      const dx = (Math.random() - 0.5) * 540;
+      const dy = (Math.random() - 0.5) * 320;
+      const rot = (Math.random() - 0.5) * 44;
+      p.style.transition = 'none';
+      p.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(0.86)`;
+      p.style.opacity = '0';        // 没拼好之前，时间是看不见的
+    });
+  }
+
+  function assemblePieces() {
+    pieces.forEach((p, k) => {
+      p.style.transition = `transform 0.62s cubic-bezier(.2,.9,.25,1.12) ${k * 55}ms, opacity 0.4s ease-out ${k * 55}ms`;
+      p.style.transform = 'translate(0,0) rotate(0deg) scale(1)';
+      p.style.opacity = '1';
+    });
+  }
+
+  function snapOn()  { tiles.forEach((t) => t.el.classList.add('snapping')); }
+  function snapOff() { tiles.forEach((t) => t.el.classList.remove('snapping')); }
+
+  function setOpen(v) {
+    if (v === isOpen) return;
+    isOpen = v;
+    board.classList.toggle('open', v);
+    snapOn();
+
+    if (v) {
+      clearTimeout(closeTimer);
+      assemblePieces();
+      hintEl.classList.add('off');
+      tiles.forEach((t) => { t.el.style.transform = 'translate3d(0,0,0) rotate(0deg)'; });
+    } else {
+      hintEl.classList.remove('off');
+      scatterPieces();
+      tiles.forEach((t, k) => {
+        if (t.i <= hourNow()) { t.el.style.transform = 'translate3d(0,0,0) rotate(0deg)'; return; }
+        t.el.style.transform = looseTransform(t, k);     // 只把没拼上的块放回松散
+      });
+      setTimeout(() => { if (!isOpen) snapOff(); }, 900);
+    }
+  }
+
+  /* 松散：幅度很小，像“放上去了但还没咬合” */
+  function looseTransform(t, k) {
+    const x = Math.sin(t.p1) * 5;
+    const y = Math.cos(t.p2) * 3.4;
+    const r = Math.sin(t.p1 * 1.3 + k * 0.3) * 3;
+    return `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${r.toFixed(2)}deg)`;
+  }
+
+  /* ---------- 时间渲染 ---------- */
+  const pad = (n) => String(n).padStart(2, '0');
+
+  function render() {
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+
+    tiles.forEach((t) => {
+      const cls = t.el.classList;
+      const isPast = t.i < h, isNow = t.i === h, isFuture = t.i > h;
+      if (cls.contains('past')   !== isPast)   cls.toggle('past', isPast);
+      if (cls.contains('now')    !== isNow)    cls.toggle('now', isNow);
+      if (cls.contains('future') !== isFuture) cls.toggle('future', isFuture);
+    });
+
+    const nowTile = tiles[h];
+    if (nowTile) nowTile.fill.style.height = (((m * 60 + s) / 3600) * 100).toFixed(2) + '%';
+
+    const map = { h1: pad(h)[0], h2: pad(h)[1], c: ':', m1: pad(m)[0], m2: pad(m)[1] };
+    pieces.forEach((p) => { p._span.textContent = map[p.dataset.k]; });
+
+    tickfill.style.width = (s / 60 * 100).toFixed(2) + '%';
+
+    dateEl.textContent = `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())}　${WEEK[now.getDay()]}`;
+  }
+
+  /* ---------- 微生命：只有“没拼上”的块是活的 ---------- */
+  let last = 0;
+  function frame(ts) {
+    if (!last) last = ts;
+    last = ts;
+
+    if (!isOpen && !reduceMotion) {
+      const rect = board.getBoundingClientRect();
+      const h = hourNow();
+      tiles.forEach((t, k) => {
+        if (t.i <= h) return;                                  // 咬合好的块是死的
+        const amp = 1;
+        let x = Math.sin(t.p1 + ts * 0.0011 * 6) * (4.5 + 3.5 * Math.sin(ts * 0.0008 + t.p2)) * amp;
+        let y = Math.cos(t.p2 + ts * 0.0009 * 6) * (3 + 2.5 * Math.cos(ts * 0.0007 + t.p1)) * amp;
+        let r = Math.sin(t.p1 * 1.3 + ts * 0.0010 * 6) * 2.6;
+
+        if (mouse.inside) {                                    // 指针靠近：轻轻躲开
+          const cx = rect.left + (k % COLS) * (TW + GAP) + TW / 2;
+          const cy = rect.top  + Math.floor(k / COLS) * (TH + GAP) + TH / 2;
+          const dx = cx - mouse.x, dy = cy - mouse.y;
+          const d = Math.hypot(dx, dy);
+          if (d < 140 && d > 1) {
+            const push = ((140 - d) / 140) * 12;
+            x += (dx / d) * push;
+            y += (dy / d) * push;
+            r += (dx / d) * 2.4;
+          }
+        }
+        t.el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${r.toFixed(2)}deg)`;
+      });
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- 交互 ---------- */
+  function holdOpen() {                                        // 点按 / 触屏：拼好并留 4 秒
+    setOpen(true);
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => setOpen(false), 4000);
+  }
+
+  stage.addEventListener('pointerenter', (e) => {
+    mouse.inside = true;
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') setOpen(true);
+  });
+  stage.addEventListener('pointermove', (e) => {
+    mouse.x = e.clientX; mouse.y = e.clientY; mouse.inside = true;
+  });
+  stage.addEventListener('pointerleave', () => {
+    mouse.inside = false; mouse.x = -9999; mouse.y = -9999;
+    if (!isOpen) return;
+    setTimeout(() => { if (!mouse.inside) setOpen(false); }, 1200);   // 余韵：拼好后再留 1.2 秒
+  });
+  stage.addEventListener('click', holdOpen);
+  stage.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (isOpen) setOpen(false); else holdOpen(); }
+  });
+
+  /* ---------- 启动 ---------- */
+  render();
+  setInterval(render, 1000);
+
+  if (reduceMotion) {
+    setOpen(true);
+    hintEl.textContent = '已按「减少动态效果」偏好静态显示';
+  } else if (forceOpen) {
+    setOpen(true);
+    hintEl.classList.add('off');
+  } else {
+    snapOn();
+    requestAnimationFrame(() => {
+      snapOff();
+      tiles.forEach((t, k) => { if (t.i > hourNow()) t.el.style.transform = looseTransform(t, k); });
+    });
+    scatterPieces();
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>

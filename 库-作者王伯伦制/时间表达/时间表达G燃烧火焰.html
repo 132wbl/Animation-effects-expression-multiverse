@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间表达 G — 燃烧火焰 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #0a0a12, #05050a 75%);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; color: #fff;
+  }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+
+  /* ============ 火焰时间 ============ */
+  .fire {
+    position: relative; font-size: 92px; font-weight: 900; letter-spacing: 6px;
+    font-variant-numeric: tabular-nums; line-height: 1;
+    text-align: center;
+    animation: fireRise 0.6s ease-in-out infinite;
+  }
+  /* 三层火焰叠加：外层火苗(橙) / 中层热浪(红) / 内层火芯(黄白) */
+  .fire .layer { position: absolute; left: 0; right: 0; top: 0; }
+  .fire .outer {
+    color: #ff5e00; text-shadow: 0 0 30px rgba(255,94,0,0.9), 0 0 60px rgba(255,94,0,0.6);
+    filter: blur(3px);
+    animation: outerWaver 0.5s ease-in-out infinite;
+  }
+  .fire .mid {
+    color: #ff9d00; text-shadow: 0 0 22px rgba(255,157,0,0.95), 0 0 44px rgba(255,120,0,0.7);
+    filter: blur(1px);
+    animation: midWaver 0.45s ease-in-out infinite;
+  }
+  .fire .core {
+    color: #fff7d6; text-shadow: 0 0 16px rgba(255,255,220,0.95), 0 0 30px rgba(255,240,160,0.8);
+  }
+  .fire .colon { animation: coreBlink 1s steps(1) infinite; }
+
+  @keyframes fireRise {
+    0%,100% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-4px) scaleY(1.03); }
+  }
+  @keyframes outerWaver {
+    0%,100% { transform: scale(1) rotate(-0.6deg); }
+    50% { transform: scale(1.12) rotate(0.6deg); }
+  }
+  @keyframes midWaver {
+    0%,100% { transform: scale(1.02) rotate(0.4deg); }
+    50% { transform: scale(0.98) rotate(-0.4deg); }
+  }
+  @keyframes coreBlink { 50% { opacity: 0.7; } }
+
+  /* 火焰底部的火星飘散 */
+  .sparks { position: relative; height: 26px; width: 240px; }
+  .spark { position: absolute; bottom: 0; width: 4px; height: 4px; border-radius: 50%;
+    background: #ffb84d; box-shadow: 0 0 8px #ff8a00; animation: sparkRise var(--d,2s) ease-out infinite; opacity: 0; }
+  @keyframes sparkRise {
+    0% { transform: translateY(0) translateX(0); opacity: 0.9; }
+    100% { transform: translateY(-46px) translateX(var(--dx,10px)); opacity: 0; }
+  }
+
+  /* ============ 底部信息 ============ */
+  .meta { text-align: center; }
+  .meta .date { font-size: 15px; letter-spacing: 3px; color: rgba(255,200,120,0.65); font-variant-numeric: tabular-nums; }
+  .meta .hint { margin-top: 8px; font-size: 11px; letter-spacing: 2px; color: rgba(255,120,0,0.4); }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.28); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="fire" id="fire"></div>
+    <div class="sparks" id="sparks"></div>
+    <div class="meta">
+      <div class="date" id="date"></div>
+      <div class="hint">时间 · 燃烧中</div>
+    </div>
+  </div>
+
+  <div class="tag">时间表达 G · 燃烧火焰</div>
+
+<script>
+  // 生成火星
+  const sparksWrap = document.getElementById('sparks');
+  for (let i = 0; i < 14; i++) {
+    const sp = document.createElement('span');
+    sp.className = 'spark';
+    sp.style.left = (8 + i * 17) + 'px';
+    sp.style.setProperty('--d', (1.4 + Math.random() * 1.8) + 's');
+    sp.style.setProperty('--dx', ((Math.random() - 0.5) * 30) + 'px');
+    sp.style.animationDelay = (Math.random() * 2) + 's';
+    sparksWrap.appendChild(sp);
+  }
+
+  // 火焰时间
+  const fireEl = document.getElementById('fire');
+  const dateEl = document.getElementById('date');
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+
+  function render(txt) {
+    // 三层叠加：外层(橙) / 中层(橙黄) / 内层(黄白芯)
+    fireEl.innerHTML =
+      `<span class="layer outer">${txt}</span>` +
+      `<span class="layer mid">${txt}</span>` +
+      `<span class="layer core">${txt}</span>`;
+  }
+
+  function update() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    // 只显示时分，秒闪烁在小字
+    render(`${h}<span class="colon">:</span>${m}`);
+    dateEl.textContent =
+      `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}` +
+      ` ${WEEK[now.getDay()]} · ${s}″`;
+  }
+  setInterval(update, 1000);
+  update();
+</script>
+</body>
+</html>

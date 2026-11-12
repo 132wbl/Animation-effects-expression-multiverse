@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>钟表 — 王伯伦原创动效库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; background: radial-gradient(circle at 50% 30%, #2a2440, #0d0b18 70%);
+    color: #fff; font-family: Georgia, "Times New Roman", serif; overflow: hidden;
+  }
+  .clock-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
+  /* 顶部挂饰 */
+  .top-deco { width: 120px; height: 46px; background: linear-gradient(#8a6d3b, #5a4420); border-radius: 60% 60% 0 0 / 80% 80% 0 0; position: relative; }
+  .top-deco::after { content: ''; position: absolute; left: 0; right: 0; bottom: -12px; margin: auto; width: 60px; height: 22px; background: linear-gradient(#d9b98a, #a37a3c); border-radius: 0 0 8px 8px; }
+  /* 钟体 */
+  .clock-body {
+    position: relative; width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #6b4f26, #3a2c14 65%, #241a0a);
+    box-shadow: inset 0 -8px 24px rgba(0,0,0,0.6), 0 12px 40px rgba(0,0,0,0.55), 0 0 0 8px #0d0b18;
+    margin-top: 14px;
+  }
+  /* 表盘 */
+  .clock-face {
+    position: absolute; inset: 22px; border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, #f6ead0, #e6d3a8);
+    box-shadow: inset 0 2px 12px rgba(120,90,40,0.55);
+  }
+  /* 刻度 */
+  .tick { position: absolute; left: 50%; top: 6px; width: 2px; background: #4a3416; transform-origin: 50% 104px; }
+  .tick.major { width: 3px; background: #2f1f0c; }
+  .tick.minor { width: 1px; background: #8a6d3b; }
+  /* 指针轴心 */
+  .center { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; transform: translate(-50%,-50%); background: #2f1f0c; border-radius: 50%; z-index: 6; box-shadow: 0 0 0 4px #d9b98a; }
+  /* 指针 */
+  .hand { position: absolute; left: 50%; bottom: 50%; transform-origin: 50% 100%; border-radius: 4px; }
+  .hand.hour { width: 8px; height: 56px; background: #1f140a; margin-left: -4px; z-index: 4; }
+  .hand.minute { width: 6px; height: 86px; background: #2f1f0c; margin-left: -3px; z-index: 5; }
+  .hand.second { width: 2px; height: 98px; background: #c0392b; margin-left: -1px; z-index: 7; border-radius: 1px; }
+  /* 数字 */
+  .digit { position: absolute; font-size: 22px; font-weight: 700; color: #3a2c14; transform: translate(-50%,-50%); }
+  /* 钟摆 */
+  .pendulum-pivot { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); width: 26px; height: 18px; background: #d9b98a; border-radius: 4px; z-index: 3; }
+  .pendulum-arm {
+    position: absolute; left: 50%; top: 100%; width: 8px; height: 190px; margin-left: -4px;
+    background: linear-gradient(#d9b98a, #8a6d3b); transform-origin: 50% 0; z-index: 2;
+  }
+  .pendulum-bob {
+    position: absolute; left: 50%; bottom: 12px; width: 44px; height: 44px; margin-left: -22px;
+    border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f0d080, #b8860b 70%); box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  /* 摆动动画 */
+  .swing { animation: swingAnim var(--swing, 1.6s) ease-in-out infinite; transform-origin: 50% 0; }
+  @keyframes swingAnim {
+    0%, 100% { transform: rotate(12deg); }
+    50% { transform: rotate(-12deg); }
+  }
+  /* 到点敲钟提示 */
+  .chime-hint { margin-top: 14px; font-size: 16px; color: #f0d080; letter-spacing: 1px; opacity: 0; transition: opacity .6s; }
+  .chime-hint.on { opacity: 1; }
+  .banner { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); font-size: 40px; font-weight: 900; color: #f0d080; text-shadow: 0 0 20px rgba(240,208,128,0.6); opacity: 0; transition: opacity .8s; letter-spacing: 4px; pointer-events: none; }
+  .banner.on { opacity: 1; }
+  .panel { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 14px; align-items: center; background: rgba(13,11,24,0.7); padding: 14px 22px; border-radius: 14px; border: 1px solid #8a6d3b; }
+  .panel label { font-size: 14px; color: #d9b98a; }
+  .panel input[type="time"] { background: #0d0b18; color: #f0d080; border: 1px solid #8a6d3b; border-radius: 6px; padding: 6px 10px; font-size: 16px; }
+  .panel button { background: #b8860b; color: #0d0b18; border: none; border-radius: 6px; padding: 6px 16px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .panel button:hover { background: #f0d080; }
+  .status { font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+
+  <div class="banner" id="banner">🛎️ 铛！铛！</div>
+
+  <div class="clock-wrap">
+    <!-- 顶部装饰 -->
+    <div class="top-deco"></div>
+
+    <!-- 钟体 -->
+    <div class="clock-body">
+      <div class="clock-face" id="face"></div>
+      <div class="hand hour" id="hourHand"></div>
+      <div class="hand minute" id="minuteHand"></div>
+      <div class="hand second" id="secondHand"></div>
+      <div class="center"></div>
+    </div>
+
+    <!-- 钟摆 -->
+    <div class="pendulum-pivot"></div>
+    <div class="pendulum-arm swing" id="arm">
+      <div class="pendulum-bob"></div>
+    </div>
+
+    <div class="chime-hint" id="hint">🔔 到点敲钟</div>
+  </div>
+
+  <!-- 设置面板 -->
+  <div class="panel">
+    <label>设定到点敲钟：</label>
+    <input type="time" id="alarmTime" value="10:36">
+    <button id="setBtn">设置</button>
+    <span class="status" id="status">未设置</span>
+  </div>
+
+<script>
+  // 表盘绘制：12 个主刻度 + 60 个细刻度 + 12 个数字
+  const face = document.getElementById('face');
+  for (let i = 0; i < 60; i++) {
+    const t = document.createElement('div');
+    t.className = 'tick' + (i % 5 === 0 ? ' major' : ' minor');
+    t.style.transform = `translateX(-50%) rotate(${i * 6}deg) translateY(${i % 5 === 0 ? -2 : -1}px)`;
+    face.appendChild(t);
+  }
+  // 数字
+  const nums = [12,1,2,3,4,5,6,7,8,9,10,11];
+  nums.forEach((n, i) => {
+    const ang = i * 30;
+    const rad = (ang - 90) * Math.PI / 180;
+    const r = 94;
+    const d = document.createElement('div');
+    d.className = 'digit';
+    d.style.left = (50 + Math.cos(rad) * r / 104 * 50) + '%';
+    d.style.top = (50 + Math.sin(rad) * r / 104 * 50) + '%';
+    d.textContent = n;
+    face.appendChild(d);
+  });
+
+  // 音效：用 Web Audio API 合成"铛"声（无需音频文件）
+  let audioCtx = null;
+  function ensureCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function chime(times = 1) {
+    const ctx = ensureCtx();
+    for (let k = 0; k < times; k++) {
+      setTimeout(() => {
+        const t0 = ctx.currentTime + 0.02;
+        // 基频（钟声余韵）
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 660;
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(0.8, t0 + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.2);
+        // 泛音，让钟声更丰满
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.value = 1320;
+        gain2.gain.setValueAtTime(0.0001, t0);
+        gain2.gain.exponentialRampToValueAtTime(0.25, t0 + 0.005);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.2);
+        osc.connect(gain).connect(ctx.destination);
+        osc2.connect(gain2).connect(ctx.destination);
+        osc.start(t0); osc.stop(t0 + 2.4);
+        osc2.start(t0); osc2.stop(t0 + 1.4);
+      }, k * 260);
+    }
+  }
+
+  // 指针更新
+  const hourHand = document.getElementById('hourHand');
+  const minuteHand = document.getElementById('minuteHand');
+  const secondHand = document.getElementById('secondHand');
+  const hint = document.getElementById('hint');
+  const banner = document.getElementById('banner');
+
+  let alarmSet = null;       // 用户设定的敲钟时刻 {h, m}
+  let lastChimeMinute = -1;  // 避免同一分钟重复敲
+
+  function tick() {
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+
+    // 指针角度：分针含秒的微小位移，秒针连续
+    const secDeg = s * 6;
+    const minDeg = m * 6 + s * 0.1;
+    const hourDeg = (h % 12) * 30 + m * 0.5;
+
+    secondHand.style.transform = `rotate(${secDeg}deg)`;
+    minuteHand.style.transform = `rotate(${minDeg}deg)`;
+    hourHand.style.transform = `rotate(${hourDeg}deg)`;
+
+    // 到点敲钟检测
+    if (alarmSet && (h === alarmSet.h) && (m === alarmSet.m) && s === 0) {
+      if (lastChimeMinute !== (h * 60 + m)) {
+        lastChimeMinute = h * 60 + m;
+        const times = (h % 12) === 0 ? 12 : (h % 12);
+        chime(times);
+        hint.classList.add('on');
+        banner.classList.add('on');
+        setTimeout(() => { hint.classList.remove('on'); banner.classList.remove('on'); }, 4000);
+      }
+    }
+  }
+
+  // 设置面板
+  const alarmInput = document.getElementById('alarmTime');
+  const setBtn = document.getElementById('setBtn');
+  const status = document.getElementById('status');
+
+  setBtn.addEventListener('click', () => {
+    const v = alarmInput.value;
+    if (!v) { alarmSet = null; status.textContent = '已关闭'; return; }
+    const [hh, mm] = v.split(':').map(Number);
+    alarmSet = { h: hh, m: mm };
+    status.textContent = `已设 ${hh}:${String(mm).padStart(2,'0')}，到点敲 ${(hh % 12) === 0 ? 12 : (hh % 12)} 声`;
+  });
+
+  // 立即启动
+  setInterval(tick, 100);
+  tick();
+</script>
+</body>
+</html>

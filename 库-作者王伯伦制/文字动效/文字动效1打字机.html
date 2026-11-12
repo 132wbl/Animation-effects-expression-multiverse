@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 ① — 打字机循环 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 40%, #10131c, #06080d 78%);
+    font-family: "Consolas", "Courier New", monospace; overflow: hidden; color: #d6fff8;
+  }
+  .type-wrap { display: flex; align-items: baseline; font-size: 40px; font-weight: 700; letter-spacing: 2px; min-height: 56px; }
+  .text { white-space: pre; }
+  .cursor {
+    display: inline-block; width: 3px; height: 44px; margin-left: 4px; background: #7ee787;
+    animation: blink 0.85s steps(1) infinite; box-shadow: 0 0 10px rgba(126,231,135,0.7);
+    vertical-align: baseline;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.3); font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="type-wrap">
+    <span class="text" id="text"></span><span class="cursor"></span>
+  </div>
+
+  <div class="meta">文字动效 ① · 打字机循环</div>
+
+<script>
+  const textEl = document.getElementById('text');
+
+  // 要循环打出/删除的句子
+  const SENTENCES = [
+    '你好，世界。',
+    '未来有无数种表达。',
+    '动效，让界面活起来。',
+    '每一帧都在呼吸。',
+    '思考从未停止。',
+    '把想象变成现实。'
+  ];
+
+  let si = 0;        // 当前句子索引
+  let ci = 0;        // 当前字符位置
+  let deleting = false;
+
+  function step() {
+    const sentence = SENTENCES[si];
+    if (!deleting) {
+      // 正在打：光标停在末尾，逐个加字
+      ci++;
+      textEl.textContent = sentence.slice(0, ci);
+      if (ci === sentence.length) {
+        // 打完了，停留一下再开始删
+        deleting = true;
+        setTimeout(step, 1400);
+        return;
+      }
+      setTimeout(step, 90 + Math.random() * 80);
+    } else {
+      // 正在删
+      ci--;
+      textEl.textContent = sentence.slice(0, ci);
+      if (ci === 0) {
+        // 删完了，换下句
+        deleting = false;
+        si = (si + 1) % SENTENCES.length;
+        setTimeout(step, 350);
+        return;
+      }
+      setTimeout(step, 40 + Math.random() * 30);
+    }
+  }
+  step();
+</script>
+</body>
+</html>

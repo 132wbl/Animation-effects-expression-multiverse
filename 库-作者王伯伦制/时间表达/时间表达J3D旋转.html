@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间表达 J — 3D 立体旋转 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 35%, #131228, #070712 78%);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; color: #fff;
+    perspective: 900px;
+  }
+  .wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 34px; }
+
+  /* ============ 3D 时间立方体 ============ */
+  .cube-stage { transform-style: preserve-3d; animation: spinY 18s linear infinite; }
+  .cube-stage .face {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 78px; font-weight: 900; letter-spacing: 6px; font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, rgba(56,189,248,0.14), rgba(167,139,250,0.16));
+    border: 1px solid rgba(148,163,184,0.28);
+    box-shadow: 0 0 30px rgba(56,189,248,0.25) inset;
+    -webkit-background-clip: text; color: #e2f2ff;
+    text-shadow: 0 4px 24px rgba(120,180,255,0.4);
+  }
+  .face.f1 { transform: translateZ(70px); }
+  .face.f2 { transform: rotateY(90deg) translateZ(70px); }
+  .face.f3 { transform: rotateY(180deg) translateZ(70px); }
+  .face.f4 { transform: rotateY(270deg) translateZ(70px); }
+  .face.f5 { transform: rotateX(90deg) translateZ(70px); }
+  .face.f6 { transform: rotateX(-90deg) translateZ(70px); }
+  @keyframes spinY {
+    0% { transform: rotateX(-10deg) rotateY(0deg); }
+    100% { transform: rotateX(-10deg) rotateY(360deg); }
+  }
+  /* 立方体尺寸 */
+  .cube { position: relative; width: 220px; height: 96px; transform-style: preserve-3d; }
+  /* 让立方体微微浮空 */
+  .cube-stage { margin-top: 40px; }
+
+  /* ============ 底部平面数字（并行显示 时分） ============ */
+  .flat {
+    font-size: 26px; letter-spacing: 4px; color: rgba(226,242,255,0.75); font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 18px rgba(120,180,255,0.5);
+  }
+  .flat .colon { color: rgba(232,121,249,0.9); }
+
+  /* ============ 星期 / 日期 ============ */
+  .meta { text-align: center; }
+  .meta .date { font-size: 14px; letter-spacing: 3px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+  .meta .hint { margin-top: 8px; font-size: 11px; letter-spacing: 3px; color: rgba(148,163,184,0.5); }
+
+  /* 旋转光晕环 */
+  .halo { position: absolute; left: 50%; top: 40px; width: 300px; height: 300px; transform: translateX(-50%); border-radius: 50%;
+    border: 1px solid rgba(56,189,248,0.18); animation: haloSpin 14s linear infinite; pointer-events: none; }
+  .halo::after { content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+    border-radius: 50%; background: #7dd3fc; box-shadow: 0 0 18px #7dd3fc, 0 0 40px rgba(125,211,252,0.6); }
+  @keyframes haloSpin { to { transform: translateX(-50%) rotate(360deg); } }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="halo"></div>
+
+    <div class="cube-stage">
+      <div class="cube" id="cube"></div>
+    </div>
+
+    <div class="flat" id="flat"></div>
+
+    <div class="meta">
+      <div class="date" id="date"></div>
+      <div class="hint">时间 · 在旋转</div>
+    </div>
+  </div>
+
+  <div class="tag">时间表达 J · 3D 立体旋转</div>
+
+<script>
+  const cubeEl = document.getElementById('cube');
+  const flatEl = document.getElementById('flat');
+  const dateEl = document.getElementById('date');
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+
+  // 6 面都显示同一时间
+  function renderCube(txt) {
+    cubeEl.innerHTML =
+      `<div class="face f1">${txt}</div>` +
+      `<div class="face f2">${txt}</div>` +
+      `<div class="face f3">${txt}</div>` +
+      `<div class="face f4">${txt}</div>` +
+      `<div class="face f5">${txt}</div>` +
+      `<div class="face f6">${txt}</div>`;
+  }
+
+  function update() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    const txt = `${h}:${m}`;
+    renderCube(txt);
+    flatEl.innerHTML = `${h}<span class="colon">:</span>${m}<span class="colon">:</span>${s}`;
+    dateEl.textContent =
+      `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}` +
+      ` ${WEEK[now.getDay()]}`;
+  }
+  setInterval(update, 1000);
+  update();
+</script>
+</body>
+</html>

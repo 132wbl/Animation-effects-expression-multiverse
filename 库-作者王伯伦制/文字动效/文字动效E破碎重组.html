@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 E — 破碎重组 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 45%, #11151f, #07090f 80%);
+    font-family: system-ui, sans-serif; overflow: hidden;
+  }
+  canvas { display: block; }
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.35); z-index: 5;
+    background: rgba(0,0,0,0.35); padding: 6px 16px; border-radius: 20px; font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+  <canvas id="cv"></canvas>
+  <div class="meta">文字动效 E · 破碎重组</div>
+
+<script>
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  let W, H;
+  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+
+  const TEXT = '重构';
+  const SIZE = 150;
+  const STEP = 7;          // 采样间距（碎片大小）
+
+  // 采集文字像素作为碎片
+  function sampleParticles(){
+    // 离屏画文字
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const octx = off.getContext('2d');
+    octx.fillStyle = '#fff';
+    octx.font = `900 ${SIZE}px "Segoe UI", "Microsoft YaHei", sans-serif`;
+    octx.textAlign = 'center'; octx.textBaseline = 'middle';
+    octx.fillText(TEXT, W/2, H/2);
+
+    const img = octx.getImageData(0,0,W,H).data;
+    const parts = [];
+    for (let y = 0; y < H; y += STEP){
+      for (let x = 0; x < W; x += STEP){
+        const i = (y*W + x) * 4;
+        if (img[i+3] > 128){   // 有不透明像素
+          parts.push({
+            ox: x + STEP/2, oy: y + STEP/2,   // 原始位置
+            x: x + STEP/2, y: y + STEP/2,
+            vx: 0, vy: 0,
+            hue: (Math.random()*40 + 190) % 360
+          });
+        }
+      }
+    }
+    return parts;
+  }
+
+  const parts = sampleParticles();
+  // 破碎力度 / 聚合强度
+  const spread = Math.min(W,H) * 0.35;
+  let phase = 0;          // 0~1: 0聚合 1破碎
+
+  function frame(){
+    // 相位循环：聚合(0) -> 破碎(1) -> 聚合(0) ...
+    phase += 0.0035;
+    if (phase > 1) phase -= 1;
+    // 用 sin 让过程来回（软破碎/软聚合）
+    const k = (Math.sin(phase * Math.PI * 2) + 1) / 2;   // 0聚合 1破碎
+
+    ctx.fillStyle = 'rgba(9,11,15,0.5)';
+    ctx.fillRect(0,0,W,H);
+
+    for (const p of parts){
+      // 目标 = 聚合到原始点 与 散开到远处 之间的插值
+      const tx = p.ox + (Math.cos(p.ox*0.02) * spread) * k;
+      const ty = p.oy + (Math.sin(p.oy*0.02) * spread) * k + (1-k)*(-18);
+      // 弹性逼近
+      p.vx += (tx - p.x) * 0.08;
+      p.vy += (ty - p.y) * 0.08;
+      p.vx *= 0.9; p.vy *= 0.9;
+      p.x += p.vx; p.y += p.vy;
+
+      ctx.fillStyle = `hsla(${p.hue},85%,70%,0.95)`;
+      ctx.fillRect(p.x - STEP/2, p.y - STEP/2, STEP, STEP);
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+</script>
+</body>
+</html>

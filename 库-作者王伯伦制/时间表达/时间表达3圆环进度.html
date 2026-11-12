@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间表达 ③ 圆环进度 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #14222e, #070b10 72%);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; color: #fff;
+  }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 26px; }
+
+  /* 圆环容器 */
+  .ring-wrap { position: relative; width: 300px; height: 300px; }
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .track { fill: none; stroke: rgba(255,255,255,0.09); stroke-width: 14; }
+  .progress {
+    fill: none; stroke-width: 14; stroke-linecap: round;
+    stroke: url(#grad); transition: stroke-dashoffset 1s linear; filter: drop-shadow(0 0 10px rgba(56,200,255,0.5));
+  }
+  /* 圆环中心数字 */
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .center .time { font-size: 54px; font-weight: 800; letter-spacing: 2px; font-variant-numeric: tabular-nums;
+    background: linear-gradient(120deg,#7dd3fc,#a5b4fc); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .center .lbl { font-size: 14px; letter-spacing: 4px; color: rgba(255,255,255,0.5); }
+  .center .sec { font-size: 18px; color: rgba(255,255,255,0.7); font-variant-numeric: tabular-nums; }
+
+  /* 三段进度标签 */
+  .meta { display: flex; gap: 22px; font-size: 13px; letter-spacing: 1px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+  .meta .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.32); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 300 300">
+        <defs>
+          <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#22d3ee"/>
+            <stop offset="100%" stop-color="#a78bfa"/>
+          </linearGradient>
+        </defs>
+        <circle class="track" cx="150" cy="150" r="130"/>
+        <circle class="progress" id="prog" cx="150" cy="150" r="130"/>
+      </svg>
+      <div class="center">
+        <div class="time" id="time">00:00</div>
+        <div class="sec" id="sec">00</div>
+        <div class="lbl" id="lbl">一天 · 0%</div>
+      </div>
+    </div>
+
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <div class="tag">时间表达 ③ · 圆环进度</div>
+
+<script>
+  const prog = document.getElementById('prog');
+  const timeEl = document.getElementById('time');
+  const secEl = document.getElementById('sec');
+  const lblEl = document.getElementById('lbl');
+  const metaEl = document.getElementById('meta');
+
+  const CIRC = 2 * Math.PI * 130;   // 圆周长
+
+  function update(){
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    // 一天进度环：一圈 = 24 小时
+    const dayFrac = (h*3600 + m*60 + s) / 86400;
+    const pct = dayFrac * 100;
+    // 用分钟作为环进度（更明显的变化）；这里展示"一天"进度
+    const offset = CIRC * (1 - dayFrac);
+    prog.style.strokeDasharray = CIRC;
+    prog.style.strokeDashoffset = offset;
+
+    timeEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    secEl.textContent = String(s).padStart(2,'0');
+    lblEl.textContent = `一天 · ${Math.round(pct)}%`;
+
+    // 三段（早/午/晚）显示当前段
+    const seg = h < 6 ? '深夜' : h < 12 ? '上午' : h < 18 ? '下午' : '晚上';
+    const segColor = h < 6 ? '#6366f1' : h < 12 ? '#fbbf24' : h < 18 ? '#f97316' : '#8b5cf6';
+    metaEl.innerHTML = `
+      <span><span class="dot" style="background:${segColor}"></span>${seg}</span>
+      <span>${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}</span>
+      <span>${['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][now.getDay()]}</span>`;
+  }
+  setInterval(update, 1000);
+  update();
+</script>
+</body>
+</html>

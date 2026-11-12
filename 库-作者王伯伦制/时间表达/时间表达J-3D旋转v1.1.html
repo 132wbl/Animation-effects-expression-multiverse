@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间表达 J v1.1 — 3D 分片旋转 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 35%, #131228, #070712 78%);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; color: #fff;
+  }
+  .wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 34px; }
+
+  /* ============ 3D 分片：每块独立旋转，并排不重叠 ============ */
+  .tiles {
+    display: flex; gap: 14px; align-items: center; perspective: 700px;
+    margin-top: 30px;
+  }
+  .tile {
+    position: relative; width: 86px; height: 110px; transform-style: preserve-3d;
+    animation: spinEach var(--spin, 6s) linear infinite;
+  }
+  .tile .face {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 66px; font-weight: 900; letter-spacing: 2px; font-variant-numeric: tabular-nums;
+    border-radius: 12px;
+    backface-visibility: hidden;
+  }
+  .tile .front {
+    background: linear-gradient(145deg, rgba(56,189,248,0.18), rgba(23,26,50,0.9));
+    border: 1px solid rgba(148,163,184,0.35);
+    color: #eaf4ff;
+    text-shadow: 0 4px 22px rgba(120,180,255,0.45);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .tile .back {
+    background: linear-gradient(145deg, rgba(232,121,249,0.16), rgba(23,26,50,0.9));
+    border: 1px solid rgba(216,180,254,0.35);
+    color: #ffe4fb;
+    text-shadow: 0 4px 22px rgba(232,121,249,0.45);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
+    transform: rotateY(180deg);
+  }
+  .tile .colon-face {
+    font-size: 52px; color: #fde68a; text-shadow: 0 0 18px rgba(253,230,138,0.6);
+  }
+  /* 每块独立自转 */
+  @keyframes spinEach {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+  /* 略微错开各块的旋转相位，更有层次 */
+  .tile:nth-child(1) { --spin: 6s; }
+  .tile:nth-child(2) { --spin: 5.2s; animation-delay: -1.3s; }
+  .tile:nth-child(3) { --spin: 0s; }        /* 冒号不转，稳定 */
+  .tile:nth-child(4) { --spin: 5.8s; animation-delay: -2.1s; }
+  .tile:nth-child(5) { --spin: 6.4s; animation-delay: -0.7s; }
+
+  /* 旋转光晕环 */
+  .halo { position: absolute; left: 50%; top: 6px; width: 420px; height: 240px; transform: translateX(-50%);
+    border: 1px solid rgba(56,189,248,0.16); border-radius: 60px; pointer-events: none;
+    animation: haloSpin 16s linear infinite; }
+  .halo::after { content: ''; position: absolute; left: 8px; top: 50%; width: 10px; height: 10px; margin-top: -5px;
+    border-radius: 50%; background: #7dd3fc; box-shadow: 0 0 18px #7dd3fc, 0 0 40px rgba(125,211,252,0.6); }
+  @keyframes haloSpin { to { transform: translateX(-50%) rotate(360deg); } }
+
+  /* ============ 底部平面数字（并行显示 时分秒） ============ */
+  .flat { font-size: 26px; letter-spacing: 4px; color: rgba(226,242,255,0.75); font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 18px rgba(120,180,255,0.5); }
+  .flat .colon { color: rgba(232,121,249,0.9); }
+
+  /* ============ 星期 / 日期 ============ */
+  .meta { text-align: center; }
+  .meta .date { font-size: 14px; letter-spacing: 3px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+  .meta .hint { margin-top: 8px; font-size: 11px; letter-spacing: 3px; color: rgba(148,163,184,0.5); }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="halo"></div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="flat" id="flat"></div>
+
+    <div class="meta">
+      <div class="date" id="date"></div>
+      <div class="hint">时间 · 每片在转</div>
+    </div>
+  </div>
+
+  <div class="tag">时间表达 J v1.1 · 3D 分片旋转</div>
+
+<script>
+  const tilesEl = document.getElementById('tiles');
+  const flatEl = document.getElementById('flat');
+  const dateEl = document.getElementById('date');
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+
+  // 为每个字符建一个 3D 分片（正反面都显示该字符）
+  function buildTiles(str) {
+    tilesEl.innerHTML = '';
+    [...str].forEach(ch => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      const isColon = ch === ':';
+      const front = document.createElement('div');
+      front.className = 'face front' + (isColon ? ' colon-face' : '');
+      front.textContent = ch;
+      const back = document.createElement('div');
+      back.className = 'face back' + (isColon ? ' colon-face' : '');
+      back.textContent = ch;
+      tile.appendChild(front);
+      tile.appendChild(back);
+      tilesEl.appendChild(tile);
+    });
+  }
+
+  function update() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    buildTiles(`${h}:${m}`);
+    flatEl.innerHTML = `${h}<span class="colon">:</span>${m}<span class="colon">:</span>${s}`;
+    dateEl.textContent =
+      `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}` +
+      ` ${WEEK[now.getDay()]}`;
+  }
+  setInterval(update, 1000);
+  update();
+</script>
+</body>
+</html>

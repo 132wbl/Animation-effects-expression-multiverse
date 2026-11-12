@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字动效 ② — 描边书写 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 45%, #1c1a14, #0b0a07 80%);
+    font-family: "KaiTi", "STKaiti", "SimSun", "Noto Serif SC", serif;
+    overflow: hidden; color: #fff;
+  }
+  .stage { position: relative; text-align: center; }
+
+  /* 描边文字：空心描边字，笔尖扫过处变亮 */
+  .hand {
+    position: relative; display: inline-block;
+    font-size: 120px; font-weight: 400; letter-spacing: 10px;
+    -webkit-text-stroke: 3px rgba(242,200,121,0.35);
+    color: transparent;
+  }
+  /* 笔迹覆盖层：一层从左到右扫过的"已写"描边，变亮变实 */
+  .hand .ink {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    color: transparent;
+    -webkit-text-stroke: 3px #ffe7ae;
+    text-shadow: 0 0 22px rgba(255,231,174,0.55);
+    clip-path: inset(0 100% 0 0);
+    animation: writeInk 3.4s cubic-bezier(0.35,0,0.2,1) infinite;
+  }
+  /* 笔尖扫过的光带：在已写区域的边缘 */
+  .hand .wipe {
+    position: absolute; left: 0; top: -10px; bottom: -10px; width: 60px;
+    background: linear-gradient(90deg, transparent, rgba(255,240,200,0.35), transparent);
+    clip-path: inset(0 100% 0 0);
+    animation: writeInk 3.4s cubic-bezier(0.35,0,0.2,1) infinite;
+    pointer-events: none;
+  }
+  @keyframes writeInk {
+    0%   { clip-path: inset(0 100% 0 0); }
+    12%  { clip-path: inset(0 88% 0 0); }   /* 起笔 */
+    90%  { clip-path: inset(0 4% 0 0); }    /* 写满 */
+    100% { clip-path: inset(0 0 0 0); }
+  }
+
+  /* 笔尖光点：紧跟已写边缘 */
+  .pen {
+    position: absolute; top: 50%; left: 0; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+    background: radial-gradient(circle, #fff7e0, #f2c879); border-radius: 50%;
+    box-shadow: 0 0 16px #f2c879, 0 0 40px rgba(242,200,121,0.6);
+    animation: penX 3.4s cubic-bezier(0.35,0,0.2,1) infinite;
+  }
+  @keyframes penX {
+    0%   { left: 0%; opacity: 0; }
+    6%   { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { left: 94%; opacity: 0; }
+  }
+
+  .sub { margin-top: 34px; font-size: 16px; letter-spacing: 5px; color: rgba(255,255,255,0.45); font-family: system-ui, sans-serif; }
+
+  .meta { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.3); font-family: system-ui, sans-serif; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <span class="hand" id="hand">你好世界
+      <span class="ink">你好世界</span>
+      <span class="wipe"></span>
+    </span>
+    <span class="pen"></span>
+    <div class="sub">手写 · 描边显现</div>
+  </div>
+
+  <div class="meta">文字动效 ② · 描边书写</div>
+
+<script>
+  // 预留：可切换要显示的文字
+  const handEl = document.getElementById('hand');
+</script>
+</body>
+</html>

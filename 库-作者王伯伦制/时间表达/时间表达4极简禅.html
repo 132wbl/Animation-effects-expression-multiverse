@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间表达 ④ 极简禅 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #171720, #09090d 72%);
+    font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; color: #fff;
+  }
+  .wrap { display: flex; align-items: center; gap: 40px; }
+
+  /* 极简竖刻度：一根时光之轴 */
+  .axis { position: relative; width: 60px; height: 320px; }
+  .line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.35), rgba(255,255,255,0.08)); }
+  /* 小时刻度 */
+  .hour-mark { position: absolute; left: 30%; width: 40%; height: 3px; background: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  /* 当前时刻的呼吸圆点 */
+  .now-dot { position: absolute; left: 50%; width: 16px; height: 16px; transform: translate(-50%,-50%);
+    background: radial-gradient(circle, #fff, #fbbf24); border-radius: 50%;
+    box-shadow: 0 0 22px rgba(251,191,36,0.8); transition: top 1s linear; }
+  .now-dot::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 1px solid rgba(251,191,36,0.4); animation: pulse 2.4s ease-out infinite; }
+  @keyframes pulse { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
+
+  /* 右侧极简数字 */
+  .zen { display: flex; flex-direction: column; gap: 4px; }
+  .zen .time { font-size: 64px; font-weight: 200; letter-spacing: 4px; font-variant-numeric: tabular-nums; color: #f5f5f4; }
+  .zen .colon { font-weight: 100; opacity: 0.4; animation: zenBlink 1s steps(1) infinite; }
+  @keyframes zenBlink { 50% { opacity: 0.1; } }
+  .zen .sec { font-size: 20px; font-weight: 300; color: rgba(255,255,255,0.6); font-variant-numeric: tabular-nums; }
+  .zen .date { margin-top: 12px; font-size: 13px; letter-spacing: 3px; color: rgba(255,255,255,0.4); font-variant-numeric: tabular-nums; }
+  .zen .motto { margin-top: 4px; font-size: 12px; letter-spacing: 6px; color: rgba(255,255,255,0.28); }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="axis" id="axis"></div>
+    <div class="zen">
+      <div class="time" id="time"><span id="hh">11</span><span class="colon">:</span><span id="mm">55</span></div>
+      <div class="sec" id="sec">00</div>
+      <div class="date" id="date">2026/11/12 星期四</div>
+      <div class="motto">此刻 · 即永恒</div>
+    </div>
+  </div>
+
+  <div class="tag">时间表达 ④ · 极简禅</div>
+
+<script>
+  // 竖刻度：24 小时刻度
+  const axis = document.getElementById('axis');
+  for (let i = 0; i < 24; i++) {
+    const mk = document.createElement('div');
+    mk.className = 'hour-mark';
+    mk.style.top = (i / 24 * 100) + '%';
+    axis.appendChild(mk);
+  }
+  // 呼吸圆点
+  const dot = document.createElement('div');
+  dot.className = 'now-dot';
+  axis.appendChild(dot);
+
+  const hhEl = document.getElementById('hh');
+  const mmEl = document.getElementById('mm');
+  const secEl = document.getElementById('sec');
+  const dateEl = document.getElementById('date');
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+
+  function update(){
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    // 圆点沿轴移动：一天 24 小时在轴上的位置（0=顶端,24=底端）
+    const frac = (h + m/60 + s/3600) / 24;
+    dot.style.top = (frac * 100) + '%';
+    hhEl.textContent = String(h).padStart(2,'0');
+    mmEl.textContent = String(m).padStart(2,'0');
+    secEl.textContent = String(s).padStart(2,'0');
+    dateEl.textContent = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${WEEK[now.getDay()]}`;
+  }
+  setInterval(update, 1000);
+  update();
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>超前时间显示 v2 — 粒子流光 · 王伯伦原创</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #10131f, #06070d 75%);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif; overflow: hidden;
+  }
+
+  /* 居中容器 */
+  .stage { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+  /* 全屏粒子 Canvas（时间背后的流光） */
+  #particles { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+
+  /* 时间主体：粒子发光文字 */
+  .clock {
+    position: relative; z-index: 2; text-align: center; user-select: none;
+    filter: drop-shadow(0 0 22px rgba(96,165,250,0.55));
+  }
+  .clock .time-line {
+    font-size: 84px; font-weight: 800; letter-spacing: 6px; line-height: 1;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(110deg, #93c5fd, #c4b5fd 40%, #f9a8d4 70%, #93c5fd);
+    background-size: 260% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: flow 6s linear infinite;
+  }
+  @keyframes flow { to { background-position: 260% 100%; } }
+  .clock .time-line .colon { animation: blinkColon 1s steps(1) infinite; }
+  @keyframes blinkColon { 50% { opacity: 0.2; } }
+
+  .clock .meta-line {
+    margin-top: 14px; display: flex; justify-content: center; gap: 18px;
+    font-size: 16px; letter-spacing: 3px; color: rgba(203,213,225,0.82);
+    font-variant-numeric: tabular-nums;
+  }
+  .clock .meta-line .sep { opacity: 0.3; }
+  .clock .seconds {
+    margin-top: 12px; font-size: 30px; font-weight: 700; color: #e879f9; letter-spacing: 3px;
+    text-shadow: 0 0 16px rgba(232,121,249,0.7); font-variant-numeric: tabular-nums;
+  }
+
+  .tag { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255,255,255,0.38); letter-spacing: 2px; z-index: 3; }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <canvas id="particles"></canvas>
+
+    <div class="clock">
+      <div class="time-line" id="timeLine">00:00</div>
+      <div class="meta-line">
+        <span id="weekday">星期四</span>
+        <span class="sep">·</span>
+        <span id="date">2026/11/12</span>
+      </div>
+      <div class="seconds" id="seconds">00</div>
+    </div>
+  </div>
+
+  <div class="tag">超前时间显示 v2 · 粒子流光</div>
+
+<script>
+  // ---- 粒子流光背景 ----
+  const cv = document.getElementById('particles');
+  const ctx = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  window.addEventListener('resize', () => { cv.width = innerWidth; cv.height = innerHeight; });
+
+  const hues = [210, 260, 320];  // 蓝紫粉
+  const ps = [];
+  for (let i = 0; i < 90; i++) {
+    ps.push({
+      x: Math.random()*cv.width, y: Math.random()*cv.height,
+      vx: (Math.random()-0.5)*0.6, vy: (Math.random()-0.5)*0.6,
+      r: 1 + Math.random()*2.4,
+      c: `hsla(${hues[Math.floor(Math.random()*hues.length)]}, 90%, 70%, ${0.4+Math.random()*0.5})`
+    });
+  }
+  // 连线距离
+  const dist = 120;
+  (function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    // 移动 + 画点
+    for (const p of ps) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x<0||p.x>cv.width) p.vx*=-1;
+      if (p.y<0||p.y>cv.height) p.vy*=-1;
+      ctx.fillStyle = p.c;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.28); ctx.fill();
+    }
+    // 就近连线（流光网）
+    for (let i=0;i<ps.length;i++) for (let j=i+1;j<ps.length;j++){
+      const a=ps[i], b=ps[j];
+      const dx=a.x-b.x, dy=a.y-b.y;
+      const d2=dx*dx+dy*dy;
+      if (d2 < dist*dist) {
+        ctx.strokeStyle = `hsla(230,90%,70%,${(1-Math.sqrt(d2)/dist)*0.28})`;
+        ctx.lineWidth = 0.6;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      }
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  // ---- 时间更新 ----
+  const timeLine = document.getElementById('timeLine');
+  const weekdayEl = document.getElementById('weekday');
+  const dateEl = document.getElementById('date');
+  const secondsEl = document.getElementById('seconds');
+  const WEEK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  function tick(){
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    timeLine.innerHTML = `${h}<span class="colon">:</span>${m}`;
+    weekdayEl.textContent = WEEK[now.getDay()];
+    dateEl.textContent = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+    secondsEl.textContent = s;
+  }
+  setInterval(tick, 200); tick();
+</script>
+</body>
+</html>
