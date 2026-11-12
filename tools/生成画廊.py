@@ -82,8 +82,14 @@ def scan():
                     raw_title = m.group(1)
             except Exception:
                 pass
-            ver_m = VER_RE.match(f.stem)
-            base = ver_m.group(1) if ver_m else f.stem
+            # 先摘掉文件名末尾的制作者后缀（如 "-L"），再解析版本，
+            # 否则 "K拼图v2-L" 会被当成另一个作品、拿不到版本徽标
+            stem = f.stem
+            m_suf = re.search(r"-([A-Za-z])$", stem)
+            if m_suf:
+                stem = stem[: m_suf.start()]
+            ver_m = VER_RE.match(stem)
+            base = ver_m.group(1) if ver_m else stem
             ver = ver_m.group(2) if ver_m and ver_m.group(2) else "1"
             items.append({
                 "file": f.name,
